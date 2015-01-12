@@ -8,6 +8,11 @@
 
 import UIKit
 import XCTest
+//import LayoutKit
+
+class DummyDelegate: NSObject, UITableViewDelegate {
+
+}
 
 class LayoutKitTests: XCTestCase {
     
@@ -24,6 +29,31 @@ class LayoutKitTests: XCTestCase {
     func testExample() {
         // This is an example of a functional test case.
         XCTAssert(true, "Pass")
+
+        let cell = UITableViewCell(style: .Default, reuseIdentifier: "")
+
+        let row = TableRowElement()
+        cell.rowElement = row
+
+        XCTAssertEqual(cell.rowElement!.dynamicType.identifier, "a", "")
+    }
+
+    func test_テーブルビューの入れ替えが正しく行われること() {
+
+        let tableView = UITableView(frame: CGRectZero, style: .Plain)
+        let initialDelegate = DummyDelegate()
+
+        tableView.delegate = initialDelegate
+
+        tableView.controller = TableController()
+
+        XCTAssertTrue(tableView.delegate! === tableView.controller!, "")
+
+        tableView.controller = nil
+
+        XCTAssertTrue(tableView.delegate! === initialDelegate, "")
+
+
     }
     
     func testPerformanceExample() {
