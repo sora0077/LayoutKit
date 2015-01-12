@@ -11,7 +11,7 @@ import LayoutKit
 
 class TextRow<T: UITableViewCell>: TableRowRendererElement<T> {
 
-    private let title: String
+    private var title: String
 
     init(title: String) {
         self.title = title
@@ -42,19 +42,12 @@ class TextRow<T: UITableViewCell>: TableRowRendererElement<T> {
 
 //        println(("viewDidDisappear", self.renderer))
     }
-}
 
-class TextViewCell: UITableViewCell {
+    override func didSelect() {
 
-    override class var identifier: String {
-        return "TextViewCell"
-    }
-
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
-        super.init(style: .Value2, reuseIdentifier: reuseIdentifier)
-    }
-
-    required init(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+//        self.replace()
+        self.replace(to: TextRow<UITableViewCell.StyleValue2>(title: "replaced"))
     }
 }
+
+

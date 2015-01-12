@@ -27,7 +27,9 @@ protocol TableElementRendererClass {
 
 public final class TableController: NSObject {
 
-    var sections: [TableSection] = [BlankSection()]
+    var sections: [TableSection] = []
+
+    weak var tableView: UITableView?
 
 
     private var registeredCells: [String: Bool] = [:]
@@ -37,25 +39,83 @@ public final class TableController: NSObject {
     private weak var altDelegate: UITableViewDelegate?
     private weak var altDataSource: UITableViewDataSource?
 
+    override public init() {
+        super.init()
+        let section = BlankSection()
+        section.controller = self
+        self.sections = [section]
+    }
+
     public subscript(index: Int) -> TableSection {
 
         get {
             return self.sections[index]
         }
         set {
-            self.sections[index] = newValue
+            self.insert(newValue, atIndex: index)
         }
     }
 
     public func append(newElement: TableSection) {
 
         self.sections.append(newElement)
+        let indexes = NSIndexSet(index: self.sections.count)
+        self.updateSectionContent(kind: .Insertion, indexes: indexes)
+
+        newElement.controller = self
+    }
+
+    public func insert(newElement: TableSection, atIndex index: Int) {
+
+        self.sections.insert(newElement, atIndex: index)
+    }
+
+    public func extend(newElements: [TableSection]) {
+
+        self.sections.extend(newElements)
+    }
+
+    public func removeAtIndex(index: Int) {
+
+        self.sections.removeAtIndex(index)
+    }
+
+    public func removeAll() {
+
+        self.sections.removeAll(keepCapacity: true)
+    }
+
+    public func removeLast() {
+        
+        self.sections.removeLast()
+    }
+
+    func updateSectionContent(#kind: NSKeyValueChange, indexes: NSIndexSet) {
+
+        if let t = self.tableView {
+
+            t.beginUpdates()
+
+            switch kind {
+            case .Setting:
+                break
+            case .Insertion:
+                t.insertSections(indexes, withRowAnimation: .Automatic)
+            case .Replacement:
+                break
+            case .Removal:
+                break
+            }
+
+            t.endUpdates()
+        }
     }
 }
 
 extension TableController {
 
     func attachTableView(tableView: UITableView) {
+        self.tableView = tableView
 
         self.altDelegate = tableView.delegate
         self.altDataSource = tableView.dataSource
@@ -71,6 +131,15 @@ extension TableController {
 
         tableView.delegate = self.altDelegate
         tableView.dataSource = self.altDataSource
+
+        self.tableView = nil
+    }
+
+    private func rows(indexPath: NSIndexPath) -> TableRowElement {
+
+        let s = self.sections[indexPath.section]
+        let r = s.rows[indexPath.row]
+        return r
     }
 }
 
@@ -95,23 +164,20 @@ extension TableController {
 
     public func tableView(tableView: UITableView, estimatedHeightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
 
-        let s = self.sections[indexPath.section]
-        let r = s.rows[indexPath.row]
+        let r = self.rows(indexPath)
         return r.estimatedSize.height
     }
 
     public func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
 
-        let s = self.sections[indexPath.section]
-        let r = s.rows[indexPath.row]
+        let r = self.rows(indexPath)
         return r.size.height
     }
 
     private typealias DequeueFunc = (String, forIndexPath: NSIndexPath) -> AnyObject
     public func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
 
-        let s = self.sections[indexPath.section]
-        let r = s.rows[indexPath.row]
+        let r = self.rows(indexPath)
         let clazz = r.dynamicType
 
         let identifier = clazz.identifier
@@ -124,6 +190,8 @@ extension TableController {
         let dequeue: DequeueFunc = tableView.dequeueReusableCellWithIdentifier
         let cell = dequeue(identifier, forIndexPath: indexPath) as UITableViewCell
         cell.rowElement = r
+        cell.accessoryType = r.accessoryType
+        cell.selectionStyle = r.selectionStyle
 
         r.index = (indexPath.section, indexPath.row)
         return cell
@@ -142,6 +210,21 @@ extension TableController {
             r.setRendererView(nil)
         }
         cell.rowElement = nil
+    }
+
+    public func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+
+        let r = self.rows(indexPath)
+        if r.autoDeselect {
+            tableView.deselectRowAtIndexPath(indexPath, animated: true)
+        }
+        r.didSelect()
+    }
+
+    public func tableView(tableView: UITableView, accessoryButtonTappedForRowWithIndexPath indexPath: NSIndexPath) {
+
+        let r = self.rows(indexPath)
+        r.accessoryButtonTapped()
     }
 }
 
@@ -178,6 +261,10 @@ extension TableController {
 
             let dequeue = tableView.dequeueReusableHeaderFooterViewWithIdentifier
             let cell = dequeue(identifier) as? UITableViewHeaderFooterView
+            if let f = cell?.sectionFooterElement {
+                f.setRendererView(nil)
+                cell?.sectionFooterElement = nil
+            }
             cell?.sectionHeaderElement = s
 
             return cell
@@ -236,6 +323,10 @@ extension TableController {
 
             let dequeue = tableView.dequeueReusableHeaderFooterViewWithIdentifier
             let cell = dequeue(identifier) as? UITableViewHeaderFooterView
+            if let f = cell?.sectionHeaderElement {
+                f.setRendererView(nil)
+                cell?.sectionHeaderElement = nil
+            }
             cell?.sectionFooterElement = s
         }
         return nil

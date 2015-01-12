@@ -8,14 +8,19 @@
 
 import UIKit
 
-
-
 public class TableRowElement: LayoutElement {
 
+    /// section, row
     var index: (Int, Int) = (0, 0)
 
+    public var accessoryType: UITableViewCellAccessoryType = .None
+    public var selectionStyle: UITableViewCellSelectionStyle = .Default
+    public var autoDeselect: Bool = true
+
+    weak var section: TableSection?
+
     class func register(tableView: UITableView) {
-        fatalError("")
+
     }
 
     override public init() {
@@ -28,8 +33,27 @@ public class TableRowElement: LayoutElement {
 
     }
 
-    func reload() {
+    public func didSelect() {
+
+    }
+
+    public func accessoryButtonTapped() {
         
+    }
+
+    public func append(newElement: TableRowElement, offset: Int = 1) {
+
+        self.section?.insert(newElement, atIndex: self.index.1 + offset)
+    }
+
+    public func remove() {
+
+        self.section?.remove(self)
+    }
+
+    public func replace(to: (@autoclosure () -> TableRowElement)? = nil) {
+
+        self.section?.replace(self, to: to)
     }
 }
 

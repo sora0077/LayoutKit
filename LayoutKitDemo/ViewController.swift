@@ -17,13 +17,32 @@ class ViewController: UIViewController {
         // Do any additional setup after loading the view, typically from a nib.
 
         self.tableView.controller = TableController()
-        self.tableView.controller?[0].append(TextRow<UITableViewCell>(title: "test"))
-        self.tableView.controller?[0].append(TextRow<UITableViewCell>(title: "test1"))
-        self.tableView.controller?[0].append(TextRow<UITableViewCell.StyleSubtitle>(title: "test2"))
-        self.tableView.controller?[0].append(TextRow<UITableViewCell.StyleValue1>(title: "test3"))
-        self.tableView.controller?[0].append(TextRow<UITableViewCell.StyleValue2>(title: "test4"))
+        if let c = self.tableView.controller {
+            c[0].append(TextRow<UITableViewCell.StyleDefault>(title: "test1"))
+            c[0].append(TextRow<UITableViewCell.StyleSubtitle>(title: "test2"))
+            c[0].append(TextRow<UITableViewCell.StyleValue1>(title: "test3"))
+            c[0].append(TextRow<UITableViewCell.StyleValue2>(title: "test4"))
+        }
+    }
 
-        
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
+
+        let delay = 3.0 * Double(NSEC_PER_SEC)
+        let when  = dispatch_time(DISPATCH_TIME_NOW, Int64(delay))
+        dispatch_after(when, dispatch_get_main_queue()) { () -> Void in
+
+            if let c = self.tableView.controller {
+                c[0].append(TextRow<UITableViewCell.StyleValue2>(title: "test5"))
+            }
+            let when  = dispatch_time(DISPATCH_TIME_NOW, Int64(delay))
+            dispatch_after(when, dispatch_get_main_queue()) { () -> Void in
+
+//                if let c = self.tableView.controller {
+//                    c[0].removeAll()
+//                }
+            }
+        }
     }
 
     override func didReceiveMemoryWarning() {
