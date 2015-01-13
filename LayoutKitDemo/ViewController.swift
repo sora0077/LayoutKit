@@ -33,14 +33,22 @@ class ViewController: UIViewController {
         dispatch_after(when, dispatch_get_main_queue()) { () -> Void in
 
             if let c = self.tableView.controller {
-                c[0].append(TextRow<UITableViewCell.StyleValue2>(title: "test5"))
+                for i in 0..<100 {
+                    c[0].append(TextRow<UITableViewCell.StyleValue2>(title: "test\(i+5)"))
+                }
             }
             let when  = dispatch_time(DISPATCH_TIME_NOW, Int64(delay))
             dispatch_after(when, dispatch_get_main_queue()) { () -> Void in
 
-//                if let c = self.tableView.controller {
-//                    c[0].removeAll()
-//                }
+                if let c = self.tableView.controller {
+                    for r in enumerate(c[0].rows) {
+                        if r.index % 2 == 0 {
+                            r.element.replace()
+                        } else {
+                            r.element.remove()
+                        }
+                    }
+                }
             }
         }
     }

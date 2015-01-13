@@ -11,7 +11,11 @@ import UIKit
 public class TableRowElement: LayoutElement {
 
     /// section, row
-    var index: (Int, Int) = (0, 0)
+    var index: (Int, Int) {
+        let section = self.section!.index
+        let index = find(self.section!.rows, self)!
+        return (section, index)
+    }
 
     public var accessoryType: UITableViewCellAccessoryType = .None
     public var selectionStyle: UITableViewCellSelectionStyle = .Default
@@ -27,6 +31,10 @@ public class TableRowElement: LayoutElement {
         super.init()
         
         self.size.height = UITableViewAutomaticDimension
+    }
+
+    func getRenderer() -> UITableViewCell? {
+        fatalError("")
     }
 
     func setRendererView(renderer: UITableViewCell?) {
@@ -97,6 +105,11 @@ public class TableRowRendererElement<T: UITableViewCell>: TableRowElement, Rende
 
     override public init() {
         super.init()
+    }
+
+
+    override func getRenderer() -> UITableViewCell? {
+        return self.renderer
     }
 
     override func setRendererView(renderer: UITableViewCell?) {

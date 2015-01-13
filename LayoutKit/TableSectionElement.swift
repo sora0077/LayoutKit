@@ -10,8 +10,10 @@ import UIKit
 
 public class TableSection: NSObject {
 
-    var rows: [TableRowElement] = []
-    var index: Int = 0
+    public private(set) var rows: [TableRowElement] = []
+    var index: Int {
+        return find(self.controller!.sections, self)!
+    }
 
     var transactionCache: [(UITableView?) -> Void] = []
 
@@ -72,16 +74,37 @@ public class TableSection: NSObject {
 
     func replaceAtIndex(index: Int, to: (@autoclosure () -> TableRowElement)? = nil) {
 
-        if let block = to {
-            let row = block()
-            let old = self.rows[index]
-            row.index = old.index
+        func inlineRefresh() {
+
+            self.transactionCache.append({ (tableView: UITableView?) -> Void in
+                if let t = tableView {
+                    t.beginUpdates()
+                    t.endUpdates()
+                }
+            })
+
+            if let c = self.controller {
+                self.popTransaction(c.tableView)
+            }
+        }
+        func outlineRefresh(row: TableRowElement) {
+
             row.section = self
             self.rows[index] = row
-        }
-        let indexes = NSIndexSet(index: index)
+            let indexes = NSIndexSet(index: index)
 
-        self.updateRowContent(kind: .Replacement, indexes: indexes)
+            self.updateRowContent(kind: .Replacement, indexes: indexes)
+        }
+        if let row = to?() {
+            let old = self.rows[index]
+            if row == old {
+                inlineRefresh()
+            } else {
+                outlineRefresh(row)
+            }
+        } else {
+            inlineRefresh()
+        }
     }
 
     public func remove(row: TableRowElement) {
@@ -133,7 +156,7 @@ public class TableSection: NSObject {
 
     func popTransaction(tableView: UITableView?) {
 
-        for t in reverse(self.transactionCache) {
+        for t in self.transactionCache {
             t(tableView)
         }
         self.transactionCache.removeAll(keepCapacity: true)

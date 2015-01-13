@@ -21,13 +21,13 @@ class TextRow<T: UITableViewCell>: TableRowRendererElement<T> {
 
     override func viewWillAppear() {
 
-//        println(("viewWillAppear", self.renderer))
+        println(("viewWillAppear", self.title))
 
     }
 
     override func viewDidAppear() {
 
-//        println(("viewDidAppear", self.renderer))
+        println(("viewDidAppear", self.title))
 
         self.renderer?.textLabel?.text = self.title
         self.renderer?.detailTextLabel?.text = "aaa"
@@ -35,18 +35,22 @@ class TextRow<T: UITableViewCell>: TableRowRendererElement<T> {
 
     override func viewWillDisappear() {
 
-//        println(("viewWillDisappear", self.renderer))
+        println(("viewWillDisappear", self.title))
+        self.renderer?.detailTextLabel?.text = "nnn"
     }
 
     override func viewDidDisappear() {
 
-//        println(("viewDidDisappear", self.renderer))
+        println(("viewDidDisappear", self.title))
     }
 
     override func didSelect() {
 
+//        self.size.height = 100
 //        self.replace()
-        self.replace(to: TextRow<UITableViewCell.StyleValue2>(title: "replaced"))
+        let row = TextRow<UITableViewCell.StyleValue2>(title: "replaced")
+//        row.size.height = self.renderer!.frame.height * 1.1
+        self.replace(to: row)
     }
 }
 

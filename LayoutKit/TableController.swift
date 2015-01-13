@@ -36,8 +36,8 @@ public final class TableController: NSObject {
     private var registeredHeaderFooterViews: [String: Bool] = [:]
 
 
-    private weak var altDelegate: UITableViewDelegate?
-    private weak var altDataSource: UITableViewDataSource?
+    weak var altDelegate: UITableViewDelegate?
+    weak var altDataSource: UITableViewDataSource?
 
     override public init() {
         super.init()
@@ -154,7 +154,6 @@ extension TableController: UITableViewDelegate, UITableViewDataSource {
     public func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 
         let s = self.sections[section]
-        s.index = section
         return s.rows.count
     }
 }
@@ -193,7 +192,6 @@ extension TableController {
         cell.accessoryType = r.accessoryType
         cell.selectionStyle = r.selectionStyle
 
-        r.index = (indexPath.section, indexPath.row)
         return cell
     }
 
@@ -361,11 +359,10 @@ extension UITableView {
         }
 
         set {
+            self.controller?.detachTableView(self)
             if self.controller != newValue {
                 if let c = newValue {
                     c.attachTableView(self)
-                } else {
-                    self.controller?.detachTableView(self)
                 }
             }
 
