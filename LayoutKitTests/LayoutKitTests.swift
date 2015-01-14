@@ -14,7 +14,7 @@ class DummyDelegate: NSObject, UITableViewDelegate {
 
 }
 
-class TextRow<T: UITableViewCell>: TableRowRendererElement<T> {
+class TextRow<T: UITableViewCell where T: TableElementRendererProtocol>: TableRowRendererElement<T> {
 
     private var title: String
 
@@ -97,7 +97,7 @@ class LayoutKitTests: XCTestCase {
 
     }
 
-    func test_() {
+    func test_セルの入れ替えでrendererとフラグがそれぞれの状態になっているか() {
 
         let row = TextRow<UITableViewCell.StyleDefault>(title: "test")
         let controller = TableController()
@@ -116,12 +116,10 @@ class LayoutKitTests: XCTestCase {
 
         tableView.reloadData()
         let indexPath = NSIndexPath(forRow: 0, inSection: 0)
-        let cell = tableView.cellForRowAtIndexPath(indexPath)!
-//        controller.tableView(tableView, willDisplayCell: cell, forRowAtIndexPath: indexPath)
+
+        tableView.cellForRowAtIndexPath(indexPath)!
 
         XCTAssertTrue(row.willAppeared, "")
-        println(row)
-        println(row.renderer)
         XCTAssertNotNil(row.renderer, "")
 
         let altRow = TextRow<UITableViewCell.StyleDefault>(title: "alt")
