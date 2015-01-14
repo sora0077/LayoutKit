@@ -27,7 +27,7 @@ protocol TableElementRendererClass {
 
 public final class TableController: NSObject {
 
-    var sections: [TableSection] = []
+    public private(set) var sections: [TableSection] = []
 
     weak var tableView: UITableView?
 
@@ -58,37 +58,79 @@ public final class TableController: NSObject {
 
     public func append(newElement: TableSection) {
 
-        self.sections.append(newElement)
-        let indexes = NSIndexSet(index: self.sections.count)
-        self.updateSectionContent(kind: .Insertion, indexes: indexes)
-
-        newElement.controller = self
+        self.insert(newElement, atIndex: self.sections.count)
     }
 
     public func insert(newElement: TableSection, atIndex index: Int) {
 
+        let indexes = NSIndexSet(index: index)
         self.sections.insert(newElement, atIndex: index)
+        self.updateSectionContent(kind: .Insertion, indexes: indexes)
+        newElement.controller = self
     }
 
     public func extend(newElements: [TableSection]) {
 
-        self.sections.extend(newElements)
+        for e in newElements {
+            self.append(e)
+        }
     }
 
-    public func removeAtIndex(index: Int) {
+    func removeAtIndex(index: Int) {
 
+        let indexes = NSIndexSet(index: index)
         self.sections.removeAtIndex(index)
+        self.updateSectionContent(kind: .Removal, indexes: indexes)
     }
 
     public func removeAll() {
 
-        self.sections.removeAll(keepCapacity: true)
+        for i in reverse(0..<self.sections.count) {
+            self.removeAtIndex(i)
+        }
     }
 
     public func removeLast() {
-        
-        self.sections.removeLast()
+
+        self.removeAtIndex(self.sections.count - 1)
     }
+
+    func replaceAtIndex(index: Int, to: (@autoclosure () -> TableSection)? = nil) {
+
+        func inlineRefresh() {
+
+            if let t = self.tableView {
+                t.beginUpdates()
+                t.endUpdates()
+            }
+        }
+        func outlineRefresh(section: TableSection) {
+
+            section.controller = self
+            self.sections[index] = section
+            let indexes = NSIndexSet(index: index)
+
+            self.updateSectionContent(kind: .Replacement, indexes: indexes)
+        }
+        if let section = to?() {
+            let old = self.sections[index]
+            if section == old {
+                inlineRefresh()
+            } else {
+                outlineRefresh(section)
+            }
+        } else {
+            inlineRefresh()
+        }
+    }
+
+    public func remove(section: TableSection) {
+
+        if let index = find(self.sections, section) {
+            self.removeAtIndex(index)
+        }
+    }
+    
 
     func updateSectionContent(#kind: NSKeyValueChange, indexes: NSIndexSet) {
 

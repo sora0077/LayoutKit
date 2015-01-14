@@ -41,9 +41,7 @@ public class TableSection: NSObject {
     public func insert(newElement: TableRowElement, atIndex index: Int) {
 
         let indexes = NSIndexSet(index: index)
-        newElement.section = self
-        self.rows.insert(newElement, atIndex: index)
-        self.updateRowContent(kind: .Insertion, indexes: indexes)
+        self.updateRowContent(kind: .Insertion, indexes: indexes, element: newElement)
     }
 
     public func extend(newElements: [TableRowElement]) {
@@ -56,8 +54,7 @@ public class TableSection: NSObject {
     func removeAtIndex(index: Int) {
 
         let indexes = NSIndexSet(index: index)
-        self.rows.removeAtIndex(index)
-        self.updateRowContent(kind: .Removal, indexes: indexes)
+        self.updateRowContent(kind: .Removal, indexes: indexes, element: nil)
     }
 
     public func removeAll() {
@@ -89,11 +86,8 @@ public class TableSection: NSObject {
         }
         func outlineRefresh(row: TableRowElement) {
 
-            row.section = self
-            self.rows[index] = row
             let indexes = NSIndexSet(index: index)
-
-            self.updateRowContent(kind: .Replacement, indexes: indexes)
+            self.updateRowContent(kind: .Replacement, indexes: indexes, element: row)
         }
         if let row = to?() {
             let old = self.rows[index]
@@ -121,7 +115,7 @@ public class TableSection: NSObject {
         }
     }
 
-    func updateRowContent(#kind: NSKeyValueChange, indexes: NSIndexSet) {
+    func updateRowContent(#kind: NSKeyValueChange, indexes: NSIndexSet, element: TableRowElement?) {
 
         let block = { (tableView: UITableView?) -> Void in
             if let t = tableView {
@@ -133,14 +127,18 @@ public class TableSection: NSObject {
 
                 t.beginUpdates()
 
+                element?.section = self
                 switch kind {
                 case .Setting:
                     break
                 case .Insertion:
+                    self.rows.insert(element!, atIndex: indexes.firstIndex)
                     t.insertRowsAtIndexPaths(indexPaths, withRowAnimation: .Automatic)
                 case .Replacement:
+                    self.rows[indexes.firstIndex] = element!
                     t.reloadRowsAtIndexPaths(indexPaths, withRowAnimation: .Automatic)
                 case .Removal:
+                    self.rows.removeAtIndex(indexes.firstIndex)
                     t.deleteRowsAtIndexPaths(indexPaths, withRowAnimation: .Automatic)
                 }
                 
@@ -156,13 +154,13 @@ public class TableSection: NSObject {
 
     func popTransaction(tableView: UITableView?) {
 
-        for t in self.transactionCache {
+        for t in reverse(self.transactionCache) {
             t(tableView)
         }
         self.transactionCache.removeAll(keepCapacity: true)
     }
 }
-typealias BlankSection = TableSection
+public typealias BlankSection = TableSection
 
 enum SectionType {
     case Header
@@ -198,6 +196,11 @@ public class TableSectionElement: LayoutElement {
                 }
             }
         }
+    }
+
+
+    override public init() {
+        super.init()
     }
 
     func setRendererView(renderer: UITableViewHeaderFooterView?) {
@@ -251,6 +254,10 @@ public class TableSectionRendererElement<T: UITableViewHeaderFooterView>: TableS
                 self.viewDidAppear()
             }
         }
+    }
+
+    override public init() {
+        super.init()
     }
 
     override func setRendererView(renderer: UITableViewHeaderFooterView?) {
