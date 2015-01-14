@@ -18,10 +18,10 @@ class ViewController: UIViewController {
 
         self.tableView.controller = TableController()
         if let c = self.tableView.controller {
-            c[0].append(TextRow<UITableViewCell.StyleDefault>(title: "test1"))
-            c[0].append(TextRow<UITableViewCell.StyleSubtitle>(title: "test2"))
-            c[0].append(TextRow<UITableViewCell.StyleValue1>(title: "test3"))
-            c[0].append(TextRow<UITableViewCell.StyleValue2>(title: "test4"))
+            c[0].append(TextRow<ColoredTextTableViewCell>(title: "test1"))
+            c[0].append(TextRow<SimpleTextTableViewCell>(title: "test2"))
+            c[0].append(TextRow<ColoredTextTableViewCell>(title: "test3"))
+            c[0].append(TextRow<SimpleTextTableViewCell>(title: "test4"))
         }
     }
 
@@ -44,7 +44,7 @@ class ViewController: UIViewController {
                         c.append(s)
                         section = s
                     case 1:
-                        section.append(TextRow<UITableViewCell.StyleValue2>(title: "test\(i)"))
+                        section.append(TextRow<SimpleTextTableViewCell>(title: "test\(i)"))
                     default:
                         break
                     }

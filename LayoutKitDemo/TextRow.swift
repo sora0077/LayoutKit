@@ -9,7 +9,12 @@
 import UIKit
 import LayoutKit
 
-class TextRow<T: UITableViewCell>: TableRowRendererElement<T> {
+protocol TextRowRendererAcceptable: TableElementRendererProtocol {
+
+    weak var titleLabel: UILabel! { get }
+}
+
+class TextRow<T: UITableViewCell where T: TextRowRendererAcceptable>: TableRowRendererElement<T> {
 
     private var title: String
 
@@ -29,14 +34,12 @@ class TextRow<T: UITableViewCell>: TableRowRendererElement<T> {
 
         println(("viewDidAppear", self.title))
 
-        self.renderer?.textLabel?.text = self.title
-        self.renderer?.detailTextLabel?.text = "aaa"
+        self.renderer?.titleLabel.text = self.title
     }
 
     override func viewWillDisappear() {
 
         println(("viewWillDisappear", self.title))
-        self.renderer?.detailTextLabel?.text = "nnn"
     }
 
     override func viewDidDisappear() {
@@ -48,7 +51,7 @@ class TextRow<T: UITableViewCell>: TableRowRendererElement<T> {
 
 //        self.size.height = 100
 //        self.replace()
-        let row = TextRow<UITableViewCell.StyleValue2>(title: "replaced")
+        let row = TextRow<ColoredTextTableViewCell>(title: "replaced")
 //        row.size.height = self.renderer!.frame.height * 1.1
         self.replace(to: row)
     }

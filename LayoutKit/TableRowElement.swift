@@ -65,7 +65,7 @@ public class TableRowElement: LayoutElement {
     }
 }
 
-public class TableRowRendererElement<T: UITableViewCell>: TableRowElement, RendererProtocol {
+public class TableRowRendererElement<T: UITableViewCell where T: TableElementRendererProtocol>: TableRowElement, RendererProtocol {
 
     typealias Renderer = T
 
@@ -124,20 +124,7 @@ public class TableRowRendererElement<T: UITableViewCell>: TableRowElement, Rende
 
 
 private var UITableViewCell_rowElement: UInt8 = 0
-extension UITableViewCell: TableElementRendererClass {
-
-    public class var identifier: String {
-        return "UITableViewCell"
-    }
-
-    public class var canRegister: Bool {
-        return true
-    }
-
-    public class func register(tableView: UITableView) {
-
-        tableView.registerClass(self, forCellReuseIdentifier: self.identifier)
-    }
+extension UITableViewCell {
 
     var rowElement: TableRowElement? {
 
@@ -157,17 +144,35 @@ extension UITableViewCell: TableElementRendererClass {
 
 extension UITableViewCell {
 
-    public class StyleDefault: UITableViewCell {
+    public class StyleDefault: UITableViewCell, TableElementRendererProtocol {
 
-        override public class var identifier: String {
+        public class var identifier: String {
             return "UITableViewCell.StyleDefault"
+        }
+
+        public class var canRegister: Bool {
+            return true
+        }
+
+        public class func register(tableView: UITableView) {
+
+            tableView.registerClass(self, forCellReuseIdentifier: self.identifier)
         }
     }
 
-    public class StyleValue1: UITableViewCell {
+    public class StyleValue1: UITableViewCell, TableElementRendererProtocol {
 
-        override public class var identifier: String {
+        public class var identifier: String {
             return "UITableViewCell.StyleValue1"
+        }
+
+        public class var canRegister: Bool {
+            return true
+        }
+
+        public class func register(tableView: UITableView) {
+
+            tableView.registerClass(self, forCellReuseIdentifier: self.identifier)
         }
 
         override public init(style: UITableViewCellStyle, reuseIdentifier: String?) {
@@ -179,10 +184,19 @@ extension UITableViewCell {
         }
     }
 
-    public class StyleValue2: UITableViewCell {
+    public class StyleValue2: UITableViewCell, TableElementRendererProtocol {
 
-        override public class var identifier: String {
+        public class var identifier: String {
             return "UITableViewCell.StyleValue2"
+        }
+
+        public class var canRegister: Bool {
+            return true
+        }
+
+        public class func register(tableView: UITableView) {
+
+            tableView.registerClass(self, forCellReuseIdentifier: self.identifier)
         }
 
         override public init(style: UITableViewCellStyle, reuseIdentifier: String?) {
@@ -194,10 +208,19 @@ extension UITableViewCell {
         }
     }
 
-    public class StyleSubtitle: UITableViewCell {
+    public class StyleSubtitle: UITableViewCell, TableElementRendererProtocol {
 
-        override public class var identifier: String {
+        public class var identifier: String {
             return "UITableViewCell.StyleSubtitle"
+        }
+
+        public class var canRegister: Bool {
+            return true
+        }
+
+        public class func register(tableView: UITableView) {
+
+            tableView.registerClass(self, forCellReuseIdentifier: self.identifier)
         }
 
         override public init(style: UITableViewCellStyle, reuseIdentifier: String?) {

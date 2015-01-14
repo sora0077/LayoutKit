@@ -273,7 +273,7 @@ public class TableSectionRendererElement<T: UITableViewHeaderFooterView>: TableS
 
 private var UITableViewHeaderFooterView_sectionHeaderElement: UInt8 = 0
 private var UITableViewHeaderFooterView_sectionFooterElement: UInt8 = 0
-extension UITableViewHeaderFooterView: TableElementRendererClass {
+extension UITableViewHeaderFooterView: TableElementRendererProtocol {
 
     public class var identifier: String {
         return "UITableViewHeaderFooterView"
