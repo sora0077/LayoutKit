@@ -25,8 +25,21 @@ public protocol TableElementRendererProtocol {
     class func register(tableView: UITableView)
 }
 
-private func make<T>(m: T) -> T {
-    return m
+extension NSKeyValueChange: Printable {
+
+    public var description: String {
+
+        switch self {
+        case .Setting:
+            return "Setting"
+        case .Insertion:
+            return "Insertion"
+        case .Removal:
+            return "Removal"
+        case .Replacement:
+            return "Replacement"
+        }
+    }
 }
 
 public final class TableController: NSObject {
@@ -50,7 +63,7 @@ public final class TableController: NSObject {
 
     var displayLink: CADisplayLink = CADisplayLink()
 
-    var transaction: [(Processor, NSKeyValueChange)] = []
+    var transaction: [(Processor, NSKeyValueChange, Int)] = []
     weak var altDelegate: UITableViewDelegate?
     weak var altDataSource: UITableViewDataSource?
 
@@ -70,24 +83,39 @@ public final class TableController: NSObject {
 
         if self.transaction.count > 0 && self.updating == false {
             self.updating = true
-            println("update")
 
             var kind = self.transaction[0].1
+            var operations: [(() -> Void, Int)] = []
 
             self.tableView?.beginUpdates()
             for _ in 0..<self.transaction.count {
                 let vv = self.transaction.removeAtIndex(0)
 
+                println("\(kind)")
+
                 if vv.1 != kind {
+                    let stream = kind == .Removal ? sorted(operations) { $0.1 > $1.1 } : operations
+                    for vv in stream {
+                        vv.0()
+                    }
+                    operations.removeAll(keepCapacity: true)
+
                     self.tableView?.endUpdates()
                     self.tableView?.beginUpdates()
+                } else {
+                    operations.append({
+                        let (list, ui) = vv.0()
+                        list()
+                        ui(tableView: self.tableView)
+                    }, vv.2)
                 }
 
-                let (list, ui) = vv.0()
-                list()
-                ui(tableView: self.tableView)
 
                 kind = vv.1
+            }
+            let stream = kind == .Removal ? sorted(operations) { $0.1 > $1.1 } : operations
+            for vv in stream {
+                vv.0()
             }
             self.tableView?.endUpdates()
 
@@ -118,7 +146,7 @@ public final class TableController: NSObject {
 
             return (list, ui)
         }
-        self.transaction.append(block, .Insertion)
+        self.transaction.append(block, .Insertion, index)
     }
 
     public func extend(newElements: [TableSection]) {
@@ -144,7 +172,7 @@ public final class TableController: NSObject {
             }
             return (list, ui)
         }
-        self.transaction.append(block, .Removal)
+        self.transaction.append(block, .Removal, index)
     }
 
     public func removeAll() {

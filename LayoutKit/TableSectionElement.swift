@@ -11,6 +11,8 @@ import UIKit
 public class TableSection: NSObject {
 
     public private(set) var rows: [TableRowElement] = []
+    private var displayedRows: [TableRowElement] = []
+
     var index: Int {
         return find(self.controller!.sections, self)!
     }
@@ -58,7 +60,7 @@ public class TableSection: NSObject {
         }
 
         if let c = self.controller {
-            c.transaction.append(block, .Insertion)
+            c.transaction.append(block, .Insertion, index)
         } else {
             let (list, _) = block()
             list()
@@ -74,20 +76,40 @@ public class TableSection: NSObject {
 
     func removeAtIndex(index: Int) {
 
-        let indexes = NSIndexSet(index: index)
-        self.updateRowContent(kind: .Removal, indexes: indexes)
+        let block: TableController.Processor = {
+            println("before \(index)")
+            let index = index == NSNotFound ? self.rows.count - 1 : index
+            println("after \(index)")
+            let indexes = NSIndexSet(index: index)
+
+            let list: TableController.ListProcess = {
+                self.rows.removeAtIndex(index); return
+            }
+            let ui: TableController.UIProcess = { (tableView) in
+                self.updateRowContent(kind: .Removal, indexes: indexes)
+            }
+
+            return (list, ui)
+        }
+
+        if let c = self.controller {
+            c.transaction.append(block, .Removal, index)
+        } else {
+            let (list, _) = block()
+            list()
+        }
     }
 
     public func removeAll() {
 
-        for i in reverse(0..<self.rows.count) {
-            self.removeAtIndex(i)
+        for _ in 0..<self.rows.count {
+            self.removeAtIndex(0)
         }
     }
 
     public func removeLast() {
 
-        self.removeAtIndex(self.rows.count - 1)
+        self.removeAtIndex(NSNotFound)
     }
 
     func replaceAtIndex(index: Int, to: (@autoclosure () -> TableRowElement)? = nil) {
@@ -124,8 +146,32 @@ public class TableSection: NSObject {
 
     public func remove(row: TableRowElement) {
 
-        if let index = find(self.rows, row) {
-            self.removeAtIndex(index)
+        let initialIndex = find(self.rows, row)
+        if initialIndex == nil {
+            return
+        }
+        
+        let block: TableController.Processor = {
+            if let index = find(self.rows, row) {
+                let indexes = NSIndexSet(index: index)
+
+                let list: TableController.ListProcess = {
+                    self.rows.removeAtIndex(index); return
+                }
+                let ui: TableController.UIProcess = { (tableView) in
+                    self.updateRowContent(kind: .Removal, indexes: indexes)
+                }
+                
+                return (list, ui)
+            }
+            return ({}, { (_) in })
+        }
+
+        if let c = self.controller {
+            c.transaction.append(block, .Removal, initialIndex!)
+        } else {
+            let (list, _) = block()
+            list()
         }
     }
 

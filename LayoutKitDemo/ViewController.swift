@@ -37,21 +37,28 @@ class ViewController: UIViewController {
                 section.header = NormalSection<UITableViewHeaderFooterView>()
                 c.append(section)
                 for i in 0..<100 {
-                    section.append(TextRow<SimpleTextTableViewCell>(title: "test\(i)"))
+                    let row = TextRow<SimpleTextTableViewCell>(title: "test\(i)")
+                    section.append(row)
+                    if i % 3 == 0 {
+
+                        section.remove(row)
+                    }
                 }
             }
             let when  = dispatch_time(DISPATCH_TIME_NOW, Int64(delay))
             dispatch_after(when, dispatch_get_main_queue()) { () -> Void in
 
-//                if let c = self.tableView.controller {
-//                    for r in enumerate(c[0].rows) {
-//                        if r.index % 2 == 0 {
-//                            r.element.replace()
-//                        } else {
-//                            r.element.remove()
-//                        }
-//                    }
-//                }
+                if let c = self.tableView.controller {
+                    for s in c.sections {
+                        for r in enumerate(s.rows) {
+                            if r.index % 2 == 0 {
+//                                r.element.replace()
+                            } else {
+                                r.element.remove()
+                            }
+                        }
+                    }
+                }
             }
         }
     }
