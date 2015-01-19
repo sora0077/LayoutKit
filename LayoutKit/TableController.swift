@@ -91,7 +91,6 @@ public final class TableController: NSObject {
             for _ in 0..<self.transaction.count {
                 let vv = self.transaction.removeAtIndex(0)
 
-                println("\(kind)")
 
                 if vv.1 != kind {
                     let stream = kind == .Removal ? sorted(operations) { $0.1 > $1.1 } : operations
@@ -102,14 +101,14 @@ public final class TableController: NSObject {
 
                     self.tableView?.endUpdates()
                     self.tableView?.beginUpdates()
-                } else {
-                    operations.append({
-                        let (list, ui) = vv.0()
-                        list()
-                        ui(tableView: self.tableView)
-                    }, vv.2)
                 }
-
+                
+                operations.append({
+//                    println("\(kind)")
+                    let (list, ui) = vv.0()
+                    list()
+                    ui(tableView: self.tableView)
+                    }, vv.2)
 
                 kind = vv.1
             }

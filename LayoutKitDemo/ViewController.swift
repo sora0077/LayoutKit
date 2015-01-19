@@ -39,10 +39,10 @@ class ViewController: UIViewController {
                 for i in 0..<100 {
                     let row = TextRow<SimpleTextTableViewCell>(title: "test\(i)")
                     section.append(row)
-                    if i % 3 == 0 {
-
-                        section.remove(row)
-                    }
+//                    if i % 3 == 0 {
+//
+//                        section.remove(row)
+//                    }
                 }
             }
             let when  = dispatch_time(DISPATCH_TIME_NOW, Int64(delay))
@@ -51,14 +51,19 @@ class ViewController: UIViewController {
                 if let c = self.tableView.controller {
                     for s in c.sections {
                         for r in enumerate(s.rows) {
-                            if r.index % 2 == 0 {
-//                                r.element.replace()
-                            } else {
-//                                s.removeLast()
-//                                r.element.remove()
+                            switch r.index % 4 {
+                            case 0:
+                                break
+                            case 1:
+                                r.element.didSelect()
+                            case 2:
+                                r.element.remove()
+                            case 3:
+                                r.element.remove()
+                            default:
+                                break
                             }
                         }
-                        s.removeAll()
                     }
                 }
             }

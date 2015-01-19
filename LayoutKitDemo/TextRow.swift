@@ -51,7 +51,8 @@ class TextRow<T: UITableViewCell where T: TextRowRendererAcceptable>: TableRowRe
 
 //        self.size.height = 100
 //        self.replace()
-        let row = TextRow<ColoredTextTableViewCell>(title: "replaced")
+        let row = TextRow<ColoredTextTableViewCell>(title: "replaced \(self.title)")
+        row.size.height = 60
 //        row.size.height = self.renderer!.frame.height * 1.1
         self.replace(to: row)
     }

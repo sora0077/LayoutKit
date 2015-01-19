@@ -19,11 +19,7 @@ public class TableSection: NSObject {
 
     var transactionCache: [(UITableView?) -> Void] = []
 
-    weak var controller: TableController? {
-        didSet {
-            self.popTransaction(self.controller?.tableView)
-        }
-    }
+    weak var controller: TableController?
 
     public var header: TableSectionElement? {
         willSet {
@@ -114,28 +110,44 @@ public class TableSection: NSObject {
 
         func inlineRefresh() {
 
-            self.transactionCache.append({ (tableView: UITableView?) -> Void in
-                if let t = tableView {
-                    t.beginUpdates()
-                    t.endUpdates()
-                }
-            })
-
             if let c = self.controller {
-                self.popTransaction(c.tableView)
+                let list: TableController.ListProcess = {}
+                let ui: TableController.UIProcess = { (_) in }
+                c.transaction.append({ (list, ui) }, .Replacement, index)
             }
         }
-        func outlineRefresh(row: TableRowElement) {
+        func outlineRefresh(row: TableRowElement, old: TableRowElement) {
 
-            let indexes = NSIndexSet(index: index)
-            self.updateRowContent(kind: .Replacement, indexes: indexes)
+            let block: TableController.Processor = {
+                if let index = find(self.rows, old) {
+                    let indexes = NSIndexSet(index: index)
+
+                    let list: TableController.ListProcess = {
+                        self.rows[index] = row
+                    }
+                    let ui: TableController.UIProcess = { (tableView) in
+                        self.updateRowContent(kind: .Replacement, indexes: indexes)
+                    }
+
+                    return (list, ui)
+                }
+
+                return ({}, { (_) in })
+            }
+
+            if let c = self.controller {
+                c.transaction.append(block, .Replacement, index)
+            } else {
+                let (list, _) = block()
+                list()
+            }
         }
         if let row = to?() {
             let old = self.rows[index]
             if row == old {
                 inlineRefresh()
             } else {
-                outlineRefresh(row)
+                outlineRefresh(row, old)
             }
         } else {
             inlineRefresh()
@@ -204,13 +216,6 @@ public class TableSection: NSObject {
         }
     }
 
-    func popTransaction(tableView: UITableView?) {
-
-        for t in reverse(self.transactionCache) {
-            t(tableView)
-        }
-        self.transactionCache.removeAll(keepCapacity: true)
-    }
 }
 public typealias BlankSection = TableSection
 
