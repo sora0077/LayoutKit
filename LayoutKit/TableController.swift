@@ -25,48 +25,100 @@ public protocol TableElementRendererProtocol {
     class func register(tableView: UITableView)
 }
 
+private func make<T>(m: T) -> T {
+    return m
+}
+
 public final class TableController: NSObject {
+
+    typealias ListProcess = () -> Void
+    typealias UIProcess = (tableView: UITableView?) -> Void
+    typealias Processor = () -> (ListProcess, UIProcess)
+
+    enum ElementType {
+        case Section
+        case Row
+    }
 
     public private(set) var sections: [TableSection] = []
 
     weak var tableView: UITableView?
 
 
-    private var registeredCells: [String: Bool] = [:]
-    private var registeredHeaderFooterViews: [String: Bool] = [:]
+    var registeredCells: [String: Bool] = [:]
+    var registeredHeaderFooterViews: [String: Bool] = [:]
 
+    var displayLink: CADisplayLink = CADisplayLink()
 
+    var transaction: [(Processor, NSKeyValueChange)] = []
     weak var altDelegate: UITableViewDelegate?
     weak var altDataSource: UITableViewDataSource?
 
     override public init() {
         super.init()
+        self.displayLink = CADisplayLink(target: self, selector: "update:")
+        self.displayLink.addToRunLoop(NSRunLoop.currentRunLoop(), forMode: NSRunLoopCommonModes)
+
         let section = BlankSection()
         section.controller = self
         self.sections = [section]
     }
 
-    public subscript(index: Int) -> TableSection {
+    var updating: Bool = false
+    @objc
+    func update(sender: AnyObject) {
 
-        get {
-            return self.sections[index]
-        }
-        set {
-            self.insert(newValue, atIndex: index)
+        if self.transaction.count > 0 && self.updating == false {
+            self.updating = true
+            println("update")
+
+            var kind = self.transaction[0].1
+
+            self.tableView?.beginUpdates()
+            for _ in 0..<self.transaction.count {
+                let vv = self.transaction.removeAtIndex(0)
+
+                if vv.1 != kind {
+                    self.tableView?.endUpdates()
+                    self.tableView?.beginUpdates()
+                }
+
+                let (list, ui) = vv.0()
+                list()
+                ui(tableView: self.tableView)
+
+                kind = vv.1
+            }
+            self.tableView?.endUpdates()
+
+            self.updating = false
         }
     }
 
     public func append(newElement: TableSection) {
 
-        self.insert(newElement, atIndex: self.sections.count)
+        self.insert(newElement, atIndex: NSNotFound)
     }
 
     public func insert(newElement: TableSection, atIndex index: Int) {
 
-        let indexes = NSIndexSet(index: index)
-        self.sections.insert(newElement, atIndex: index)
-        self.updateSectionContent(kind: .Insertion, indexes: indexes)
-        newElement.controller = self
+        let index = index == self.sections.count ? NSNotFound : index
+
+        let block: Processor = {
+            let index = index == NSNotFound ? self.sections.count : index
+            let indexes = NSIndexSet(index: index)
+
+            let list: ListProcess = {
+                self.sections.insert(newElement, atIndex: index)
+                newElement.controller = self
+            }
+            let ui: UIProcess = { (tableView) in
+                self.updateSectionContent(kind: .Insertion, indexes: indexes)
+            }
+
+            return (list, ui)
+        }
+        self.transaction.append(block, .Insertion)
     }
 
     public func extend(newElements: [TableSection]) {
@@ -78,21 +130,33 @@ public final class TableController: NSObject {
 
     func removeAtIndex(index: Int) {
 
-        let indexes = NSIndexSet(index: index)
-        self.sections.removeAtIndex(index)
-        self.updateSectionContent(kind: .Removal, indexes: indexes)
+        let index = index == self.sections.count - 1 ? NSNotFound : index
+
+        let block: Processor = {
+            let index = index == NSNotFound ? self.sections.count - 1 : index
+            let indexes = NSIndexSet(index: index)
+
+            let list: ListProcess = {
+                self.sections.removeAtIndex(index); return
+            }
+            let ui: UIProcess = { (tableView) in
+                self.updateSectionContent(kind: .Removal, indexes: indexes)
+            }
+            return (list, ui)
+        }
+        self.transaction.append(block, .Removal)
     }
 
     public func removeAll() {
 
-        for i in reverse(0..<self.sections.count) {
-            self.removeAtIndex(i)
+        for i in 0..<self.sections.count {
+            self.removeAtIndex(NSNotFound)
         }
     }
 
     public func removeLast() {
 
-        self.removeAtIndex(self.sections.count - 1)
+        self.removeAtIndex(NSNotFound)
     }
 
     func replaceAtIndex(index: Int, to: (@autoclosure () -> TableSection)? = nil) {

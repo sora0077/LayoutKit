@@ -35,13 +35,34 @@ public class TableSection: NSObject {
     }
     public func append(newElement: TableRowElement) {
 
-        self.insert(newElement, atIndex: self.rows.count)
+        self.insert(newElement, atIndex: NSNotFound)
     }
 
     public func insert(newElement: TableRowElement, atIndex index: Int) {
 
-        let indexes = NSIndexSet(index: index)
-        self.updateRowContent(kind: .Insertion, indexes: indexes, element: newElement)
+        let index = index == self.rows.count ? NSNotFound : index
+
+        let block: TableController.Processor = {
+            let index = index == NSNotFound ? self.rows.count : index
+            let indexes = NSIndexSet(index: index)
+
+            let list: TableController.ListProcess = {
+                self.rows.insert(newElement, atIndex: index)
+                newElement.section = self
+            }
+            let ui: TableController.UIProcess = { (tableView) in
+                self.updateRowContent(kind: .Insertion, indexes: indexes)
+            }
+
+            return (list, ui)
+        }
+
+        if let c = self.controller {
+            c.transaction.append(block, .Insertion)
+        } else {
+            let (list, _) = block()
+            list()
+        }
     }
 
     public func extend(newElements: [TableRowElement]) {
@@ -54,7 +75,7 @@ public class TableSection: NSObject {
     func removeAtIndex(index: Int) {
 
         let indexes = NSIndexSet(index: index)
-        self.updateRowContent(kind: .Removal, indexes: indexes, element: nil)
+        self.updateRowContent(kind: .Removal, indexes: indexes)
     }
 
     public func removeAll() {
@@ -87,7 +108,7 @@ public class TableSection: NSObject {
         func outlineRefresh(row: TableRowElement) {
 
             let indexes = NSIndexSet(index: index)
-            self.updateRowContent(kind: .Replacement, indexes: indexes, element: row)
+            self.updateRowContent(kind: .Replacement, indexes: indexes)
         }
         if let row = to?() {
             let old = self.rows[index]
@@ -115,40 +136,27 @@ public class TableSection: NSObject {
         }
     }
 
-    func updateRowContent(#kind: NSKeyValueChange, indexes: NSIndexSet, element: TableRowElement?) {
+    func updateRowContent(#kind: NSKeyValueChange, indexes: NSIndexSet) {
 
-        let block = { (tableView: UITableView?) -> Void in
-            if let t = tableView {
-                var indexPaths: [NSIndexPath] = []
-                indexes.enumerateIndexesUsingBlock({ (i, stop) -> Void in
-                    let indexPath = NSIndexPath(forRow: i, inSection: self.index)
-                    indexPaths.append(indexPath)
-                })
+        if let t = self.controller?.tableView {
 
-                t.beginUpdates()
+            var indexPaths: [NSIndexPath] = []
+            indexes.enumerateIndexesUsingBlock({ (i, stop) -> Void in
+                let indexPath = NSIndexPath(forRow: i, inSection: self.index)
+                indexPaths.append(indexPath)
+            })
 
-                element?.section = self
-                switch kind {
-                case .Setting:
-                    break
-                case .Insertion:
-                    self.rows.insert(element!, atIndex: indexes.firstIndex)
-                    t.insertRowsAtIndexPaths(indexPaths, withRowAnimation: .Automatic)
-                case .Replacement:
-                    self.rows[indexes.firstIndex] = element!
-                    t.reloadRowsAtIndexPaths(indexPaths, withRowAnimation: .Automatic)
-                case .Removal:
-                    self.rows.removeAtIndex(indexes.firstIndex)
-                    t.deleteRowsAtIndexPaths(indexPaths, withRowAnimation: .Automatic)
-                }
-                
-                t.endUpdates()
+
+            switch kind {
+            case .Setting:
+                break
+            case .Insertion:
+                t.insertRowsAtIndexPaths(indexPaths, withRowAnimation: .Automatic)
+            case .Replacement:
+                t.reloadRowsAtIndexPaths(indexPaths, withRowAnimation: .Automatic)
+            case .Removal:
+                t.deleteRowsAtIndexPaths(indexPaths, withRowAnimation: .Automatic)
             }
-        }
-        self.transactionCache.append(block)
-
-        if let c = self.controller {
-            self.popTransaction(c.tableView)
         }
     }
 

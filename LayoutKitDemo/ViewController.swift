@@ -18,10 +18,10 @@ class ViewController: UIViewController {
 
         self.tableView.controller = TableController()
         if let c = self.tableView.controller {
-            c[0].append(TextRow<ColoredTextTableViewCell>(title: "test1"))
-            c[0].append(TextRow<SimpleTextTableViewCell>(title: "test2"))
-            c[0].append(TextRow<ColoredTextTableViewCell>(title: "test3"))
-            c[0].append(TextRow<SimpleTextTableViewCell>(title: "test4"))
+            c.sections[0].append(TextRow<ColoredTextTableViewCell>(title: "test1"))
+            c.sections[0].append(TextRow<SimpleTextTableViewCell>(title: "test2"))
+            c.sections[0].append(TextRow<ColoredTextTableViewCell>(title: "test3"))
+            c.sections[0].append(TextRow<SimpleTextTableViewCell>(title: "test4"))
         }
     }
 
@@ -37,31 +37,21 @@ class ViewController: UIViewController {
                 section.header = NormalSection<UITableViewHeaderFooterView>()
                 c.append(section)
                 for i in 0..<100 {
-                    switch arc4random_uniform(2) {
-                    case 0:
-                        let s = BlankSection()
-                        section.header = NormalSection<UITableViewHeaderFooterView>()
-                        c.append(s)
-                        section = s
-                    case 1:
-                        section.append(TextRow<SimpleTextTableViewCell>(title: "test\(i)"))
-                    default:
-                        break
-                    }
+                    section.append(TextRow<SimpleTextTableViewCell>(title: "test\(i)"))
                 }
             }
             let when  = dispatch_time(DISPATCH_TIME_NOW, Int64(delay))
             dispatch_after(when, dispatch_get_main_queue()) { () -> Void in
 
-                if let c = self.tableView.controller {
-                    for r in enumerate(c[0].rows) {
-                        if r.index % 2 == 0 {
-                            r.element.replace()
-                        } else {
-                            r.element.remove()
-                        }
-                    }
-                }
+//                if let c = self.tableView.controller {
+//                    for r in enumerate(c[0].rows) {
+//                        if r.index % 2 == 0 {
+//                            r.element.replace()
+//                        } else {
+//                            r.element.remove()
+//                        }
+//                    }
+//                }
             }
         }
     }

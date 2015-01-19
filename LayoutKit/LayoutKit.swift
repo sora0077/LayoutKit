@@ -31,6 +31,9 @@ public class LayoutElement: NSObject {
         }
     }
 
+    public var superelement: LayoutElement?
+    public var subelements: [LayoutElement] = []
+
     override public init() {
         super.init()
     }
@@ -42,6 +45,14 @@ public class LayoutElement: NSObject {
     class var canRegister: Bool {
         return false
     }
+
+//    public func isViewLoaded() -> Bool {
+//        fatalError("")
+//    }
+//
+//    public func viewDidLoad() {
+//
+//    }
 
     public func viewWillAppear() {
 
@@ -59,5 +70,13 @@ public class LayoutElement: NSObject {
         
     }
 
+
+}
+
+public class LayoutGroup: LayoutElement {
+
+    override public init() {
+        super.init()
+    }
 
 }
