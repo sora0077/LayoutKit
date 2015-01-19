@@ -54,9 +54,11 @@ class ViewController: UIViewController {
                             if r.index % 2 == 0 {
 //                                r.element.replace()
                             } else {
-                                r.element.remove()
+//                                s.removeLast()
+//                                r.element.remove()
                             }
                         }
+                        s.removeAll()
                     }
                 }
             }

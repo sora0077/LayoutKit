@@ -77,9 +77,7 @@ public class TableSection: NSObject {
     func removeAtIndex(index: Int) {
 
         let block: TableController.Processor = {
-            println("before \(index)")
             let index = index == NSNotFound ? self.rows.count - 1 : index
-            println("after \(index)")
             let indexes = NSIndexSet(index: index)
 
             let list: TableController.ListProcess = {
@@ -102,8 +100,8 @@ public class TableSection: NSObject {
 
     public func removeAll() {
 
-        for _ in 0..<self.rows.count {
-            self.removeAtIndex(0)
+        for i in reverse(0..<self.rows.count) {
+            self.removeAtIndex(i)
         }
     }
 
