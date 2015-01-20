@@ -35,7 +35,7 @@ class ViewController: UIViewController {
             if let c = self.tableView.controller {
                 for j in 0..<10 {
                     var section: BlankSection! = BlankSection()
-                    section.header = NormalSection<UITableViewHeaderFooterView>()
+                    section.header = NormalSection<UITableViewHeaderFooterView>(title: "header")
 
                     if j % 2 == 0 {
                         c.append(section)
@@ -46,6 +46,7 @@ class ViewController: UIViewController {
                     }
                     if j % 2 == 1 {
                         c.append(section)
+                        section.footer = NormalSection<UITableViewHeaderFooterView>(title: "footer")
                     }
                 }
             }

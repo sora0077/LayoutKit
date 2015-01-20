@@ -380,8 +380,9 @@ extension TableController {
 
     public func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
 
-        if let s = self.sections[section].header {
-            let clazz = s.dynamicType
+        let s = self.sections[section]
+        if let h = s.header {
+            let clazz = h.dynamicType
             let identifier = clazz.identifier
             let is_registered = self.registeredHeaderFooterViews[identifier] ?? false
 
@@ -396,11 +397,13 @@ extension TableController {
 
             let dequeue = tableView.dequeueReusableHeaderFooterViewWithIdentifier
             let cell = dequeue(identifier) as? UITableViewHeaderFooterView
-            if let f = cell?.sectionFooterElement {
-                f.setRendererView(nil)
-                cell?.sectionFooterElement = nil
+            if s.footer == nil {
+                if let f = cell?.sectionFooterElement {
+                    f.setRendererView(nil)
+                    cell?.sectionFooterElement = nil
+                }
             }
-            cell?.sectionHeaderElement = s
+            cell?.sectionHeaderElement = h
 
             return cell
         }
@@ -442,8 +445,9 @@ extension TableController {
 
     public func tableView(tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
 
-        if let s = self.sections[section].footer {
-            let clazz = s.dynamicType
+        let s = self.sections[section]
+        if let f = s.footer {
+            let clazz = f.dynamicType
             let identifier = clazz.identifier
             let is_registered = self.registeredHeaderFooterViews[identifier] ?? false
 
@@ -458,11 +462,15 @@ extension TableController {
 
             let dequeue = tableView.dequeueReusableHeaderFooterViewWithIdentifier
             let cell = dequeue(identifier) as? UITableViewHeaderFooterView
-            if let f = cell?.sectionHeaderElement {
-                f.setRendererView(nil)
-                cell?.sectionHeaderElement = nil
+            if s.header == nil {
+                if let h = cell?.sectionHeaderElement {
+                    h.setRendererView(nil)
+                    cell?.sectionHeaderElement = nil
+                }
             }
-            cell?.sectionFooterElement = s
+            cell?.sectionFooterElement = f
+
+            return cell
         }
         return nil
     }

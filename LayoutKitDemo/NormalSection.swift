@@ -11,7 +11,11 @@ import LayoutKit
 
 class NormalSection<T: UITableViewHeaderFooterView>: TableSectionRendererElement<T> {
 
-    override init() {
+    private let title: String
+
+    init(title: String) {
+        self.title = title
+
         super.init()
 
         self.size.height = 20
@@ -21,7 +25,7 @@ class NormalSection<T: UITableViewHeaderFooterView>: TableSectionRendererElement
     override func viewDidAppear() {
 
 //        self.renderer?.contentView.backgroundColor = UIColor.blueColor()
-        self.renderer?.textLabel.text = "header"
+        self.renderer?.textLabel.text = self.title
     }
 
 }
