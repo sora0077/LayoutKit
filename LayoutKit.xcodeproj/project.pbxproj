@@ -140,7 +140,7 @@
 		4A44213D1A627EF400A8A41F /* LayoutKit */ = {
 			isa = PBXGroup;
 			children = (
-				4A44217D1A627F6B00A8A41F /* TableView */,
+				4A44217D1A627F6B00A8A41F /* TableLayout */,
 				4A4421401A627EF400A8A41F /* LayoutKit.h */,
 				4ADAAE741A62B63A00C1DD39 /* LayoutKit.swift */,
 				4A44213E1A627EF400A8A41F /* Supporting Files */,
@@ -197,14 +197,14 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		4A44217D1A627F6B00A8A41F /* TableView */ = {
+		4A44217D1A627F6B00A8A41F /* TableLayout */ = {
 			isa = PBXGroup;
 			children = (
 				4ADAAE711A62B60F00C1DD39 /* TableController.swift */,
 				4ADAAE6E1A62B59A00C1DD39 /* TableSectionElement.swift */,
 				4A44217E1A627F9600A8A41F /* TableRowElement.swift */,
 			);
-			name = TableView;
+			path = TableLayout;
 			sourceTree = "<group>";
 		};
 		4A6902861A66D2EE00046F67 /* TableViewCell */ = {
