@@ -33,16 +33,20 @@ class ViewController: UIViewController {
         dispatch_after(when, dispatch_get_main_queue()) { () -> Void in
 
             if let c = self.tableView.controller {
-                var section: BlankSection! = BlankSection()
-                section.header = NormalSection<UITableViewHeaderFooterView>()
-                c.append(section)
-                for i in 0..<100 {
-                    let row = TextRow<SimpleTextTableViewCell>(title: "test\(i)")
-                    section.append(row)
-//                    if i % 3 == 0 {
-//
-//                        section.remove(row)
-//                    }
+                for j in 0..<10 {
+                    var section: BlankSection! = BlankSection()
+                    section.header = NormalSection<UITableViewHeaderFooterView>()
+
+                    if j % 2 == 0 {
+                        c.append(section)
+                    }
+                    for i in 0..<40 {
+                        let row = TextRow<SimpleTextTableViewCell>(title: "test\(i)")
+                        section.append(row)
+                    }
+                    if j % 2 == 1 {
+                        c.append(section)
+                    }
                 }
             }
             let when  = dispatch_time(DISPATCH_TIME_NOW, Int64(delay))

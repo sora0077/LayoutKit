@@ -70,6 +70,7 @@ public final class TableController: NSObject {
     override public init() {
         super.init()
         self.displayLink = CADisplayLink(target: self, selector: "update:")
+        self.displayLink.frameInterval = 12
         self.displayLink.addToRunLoop(NSRunLoop.currentRunLoop(), forMode: NSRunLoopCommonModes)
 
         let section = BlankSection()
@@ -78,8 +79,11 @@ public final class TableController: NSObject {
     }
 
     var updating: Bool = false
+    let queue = dispatch_queue_create("", nil)
     @objc
     func update(sender: AnyObject) {
+
+//        println(self.displayLink.timestamp)
 
         if self.transaction.count > 0 && self.updating == false {
             self.updating = true
@@ -88,9 +92,9 @@ public final class TableController: NSObject {
             var operations: [(() -> Void, Int)] = []
 
             self.tableView?.beginUpdates()
-            for _ in 0..<self.transaction.count {
+            let num = self.transaction.count
+            for _ in 0..<min(num, 16) {
                 let vv = self.transaction.removeAtIndex(0)
-
 
                 if vv.1 != kind {
                     let stream = kind == .Removal ? sorted(operations) { $0.1 > $1.1 } : operations
@@ -104,11 +108,11 @@ public final class TableController: NSObject {
                 }
                 
                 operations.append({
-//                    println("\(kind)")
+                    //                    println("\(kind)")
                     let (list, ui) = vv.0()
                     list()
                     ui(tableView: self.tableView)
-                    }, vv.2)
+                }, vv.2)
 
                 kind = vv.1
             }
