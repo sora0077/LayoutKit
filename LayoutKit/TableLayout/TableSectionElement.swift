@@ -24,13 +24,20 @@ public class TableSection: NSObject {
     public var header: TableSectionElement? {
         willSet {
             newValue?.sectionType = .Header
+            newValue?.section = self
         }
     }
     public var footer: TableSectionElement? {
         willSet {
             newValue?.sectionType = .Footer
+            newValue?.section = self
         }
     }
+
+    public func nextResponder() -> UIResponder? {
+        return self.controller?.responder
+    }
+
     public func append(newElement: TableRowElement) {
 
         self.insert(newElement, atIndex: NSNotFound)
@@ -217,7 +224,7 @@ public class TableSection: NSObject {
     }
 
 }
-public typealias BlankSection = TableSection
+//public typealias BlankSection = TableSection
 
 enum SectionType {
     case Header
@@ -255,6 +262,7 @@ public class TableSectionElement: LayoutElement {
         }
     }
 
+    weak var section: TableSection?
 
     override public init() {
         super.init()
@@ -262,6 +270,10 @@ public class TableSectionElement: LayoutElement {
 
     func setRendererView(renderer: UITableViewHeaderFooterView?) {
 
+    }
+
+    public func nextResponder() -> UIResponder? {
+        return self.section?.nextResponder()
     }
 }
 

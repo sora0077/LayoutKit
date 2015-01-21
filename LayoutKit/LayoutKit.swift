@@ -11,6 +11,8 @@ import CoreGraphics
 
 protocol RendererProtocol {
 
+//    typealias SelfType
+
     typealias Renderer
 
     var renderer: Renderer? { get }

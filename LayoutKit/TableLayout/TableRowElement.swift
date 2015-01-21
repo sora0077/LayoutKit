@@ -41,6 +41,10 @@ public class TableRowElement: LayoutElement {
 
     }
 
+    public func nextResponder() -> UIResponder? {
+        return self.section?.nextResponder()
+    }
+
     public func didSelect() {
 
     }

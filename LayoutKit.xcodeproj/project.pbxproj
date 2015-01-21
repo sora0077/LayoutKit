@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4A302F131A6ECED600CD700B /* MenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A302F121A6ECED600CD700B /* MenuViewController.swift */; };
+		4A302F161A6ECFA900CD700B /* MenuRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A302F151A6ECFA900CD700B /* MenuRow.swift */; };
+		4A302F191A70057500CD700B /* TimelineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A302F181A70057500CD700B /* TimelineViewController.swift */; };
+		4A302F1B1A70064100CD700B /* TimelineRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A302F1A1A70064100CD700B /* TimelineRow.swift */; };
+		4A302F1D1A700D1400CD700B /* TimelineSentinelRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A302F1C1A700D1400CD700B /* TimelineSentinelRow.swift */; };
 		4A4421411A627EF400A8A41F /* LayoutKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 4A4421401A627EF400A8A41F /* LayoutKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4A4421471A627EF400A8A41F /* LayoutKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A44213B1A627EF400A8A41F /* LayoutKit.framework */; };
 		4A44214E1A627EF400A8A41F /* LayoutKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A44214D1A627EF400A8A41F /* LayoutKitTests.swift */; };
@@ -65,6 +70,11 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		4A302F121A6ECED600CD700B /* MenuViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuViewController.swift; sourceTree = "<group>"; };
+		4A302F151A6ECFA900CD700B /* MenuRow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuRow.swift; sourceTree = "<group>"; };
+		4A302F181A70057500CD700B /* TimelineViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimelineViewController.swift; sourceTree = "<group>"; };
+		4A302F1A1A70064100CD700B /* TimelineRow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimelineRow.swift; sourceTree = "<group>"; };
+		4A302F1C1A700D1400CD700B /* TimelineSentinelRow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimelineSentinelRow.swift; sourceTree = "<group>"; };
 		4A44213B1A627EF400A8A41F /* LayoutKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = LayoutKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4A44213F1A627EF400A8A41F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4A4421401A627EF400A8A41F /* LayoutKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LayoutKit.h; sourceTree = "<group>"; };
@@ -117,6 +127,25 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4A302F141A6ECF7D00CD700B /* MenuView */ = {
+			isa = PBXGroup;
+			children = (
+				4A302F151A6ECFA900CD700B /* MenuRow.swift */,
+				4A302F121A6ECED600CD700B /* MenuViewController.swift */,
+			);
+			name = MenuView;
+			sourceTree = "<group>";
+		};
+		4A302F171A7004C700CD700B /* TimelineView */ = {
+			isa = PBXGroup;
+			children = (
+				4A302F181A70057500CD700B /* TimelineViewController.swift */,
+				4A302F1A1A70064100CD700B /* TimelineRow.swift */,
+				4A302F1C1A700D1400CD700B /* TimelineSentinelRow.swift */,
+			);
+			name = TimelineView;
+			sourceTree = "<group>";
+		};
 		4A4421311A627EF400A8A41F = {
 			isa = PBXGroup;
 			children = (
@@ -176,6 +205,8 @@
 		4A44215C1A627F5700A8A41F /* LayoutKitDemo */ = {
 			isa = PBXGroup;
 			children = (
+				4A302F171A7004C700CD700B /* TimelineView */,
+				4A302F141A6ECF7D00CD700B /* MenuView */,
 				4A6902861A66D2EE00046F67 /* TableViewCell */,
 				4A44215F1A627F5700A8A41F /* AppDelegate.swift */,
 				4A4421611A627F5700A8A41F /* ViewController.swift */,
@@ -387,7 +418,12 @@
 				4A6902891A66D39600046F67 /* SimpleTextTableViewCell.swift in Sources */,
 				4A69028D1A66D42900046F67 /* ColoredTextTableViewCell.swift in Sources */,
 				4A6902851A66D0B200046F67 /* NormalSection.swift in Sources */,
+				4A302F131A6ECED600CD700B /* MenuViewController.swift in Sources */,
 				4A4421621A627F5700A8A41F /* ViewController.swift in Sources */,
+				4A302F1B1A70064100CD700B /* TimelineRow.swift in Sources */,
+				4A302F191A70057500CD700B /* TimelineViewController.swift in Sources */,
+				4A302F161A6ECFA900CD700B /* MenuRow.swift in Sources */,
+				4A302F1D1A700D1400CD700B /* TimelineSentinelRow.swift in Sources */,
 				4A4421601A627F5700A8A41F /* AppDelegate.swift in Sources */,
 				4ADAAE7D1A62D09000C1DD39 /* TextRow.swift in Sources */,
 			);

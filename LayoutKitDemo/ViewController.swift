@@ -16,7 +16,7 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
 
-        self.tableView.controller = TableController()
+        self.tableView.controller = TableController(responder: self)
         if let c = self.tableView.controller {
             c.sections[0].append(TextRow<ColoredTextTableViewCell>(title: "test1"))
             c.sections[0].append(TextRow<SimpleTextTableViewCell>(title: "test2"))
@@ -34,7 +34,7 @@ class ViewController: UIViewController {
 
             if let c = self.tableView.controller {
                 for j in 0..<10 {
-                    var section: BlankSection! = BlankSection()
+                    var section = TableSection()
                     section.header = NormalSection<UITableViewHeaderFooterView>(title: "header")
 
                     if j % 2 == 0 {

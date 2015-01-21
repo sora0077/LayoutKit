@@ -67,15 +67,23 @@ public final class TableController: NSObject {
     weak var altDelegate: UITableViewDelegate?
     weak var altDataSource: UITableViewDataSource?
 
-    override public init() {
+    let responder: UIResponder?
+
+    public init(responder: UIResponder?) {
+        self.responder = responder
+        
         super.init()
         self.displayLink = CADisplayLink(target: self, selector: "update:")
         self.displayLink.frameInterval = 12
         self.displayLink.addToRunLoop(NSRunLoop.currentRunLoop(), forMode: NSRunLoopCommonModes)
 
-        let section = BlankSection()
+        let section = TableSection()
         section.controller = self
         self.sections = [section]
+    }
+
+    deinit {
+
     }
 
     var updating: Bool = false
@@ -83,7 +91,7 @@ public final class TableController: NSObject {
     @objc
     func update(sender: AnyObject) {
 
-//        println(self.displayLink.timestamp)
+        println(self, self.displayLink.timestamp)
 
         if self.transaction.count > 0 && self.updating == false {
             self.updating = true
