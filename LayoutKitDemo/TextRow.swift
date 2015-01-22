@@ -48,7 +48,7 @@ class TextRow<T: UITableViewCell where T: TextRowRendererAcceptable>: TableRowRe
     }
 
     override func didSelect() {
-
+        super.didSelect()
 //        self.size.height = 100
 //        self.replace()
         let row = TextRow<ColoredTextTableViewCell>(title: "replaced \(self.title)")

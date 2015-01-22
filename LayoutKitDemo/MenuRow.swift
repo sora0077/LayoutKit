@@ -27,6 +27,7 @@ class MenuRow<T: UITableViewCell where T: TableElementRendererProtocol>: TableRo
     }
 
     override func didSelect() {
+        super.didSelect()
 
         self.action()
     }

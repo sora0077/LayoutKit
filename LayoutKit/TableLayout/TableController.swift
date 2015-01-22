@@ -74,7 +74,7 @@ public final class TableController: NSObject {
         
         super.init()
         self.displayLink = CADisplayLink(target: self, selector: "update:")
-        self.displayLink.frameInterval = 12
+        self.displayLink.frameInterval = 20
         self.displayLink.addToRunLoop(NSRunLoop.currentRunLoop(), forMode: NSRunLoopCommonModes)
 
         let section = TableSection()
@@ -101,6 +101,7 @@ public final class TableController: NSObject {
 
             self.tableView?.beginUpdates()
             let num = self.transaction.count
+            //一度で大量に処理されることを防ぐ
             for _ in 0..<min(num, 16) {
                 let vv = self.transaction.removeAtIndex(0)
 
@@ -129,6 +130,16 @@ public final class TableController: NSObject {
                 vv.0()
             }
             self.tableView?.endUpdates()
+
+
+            if self.transaction.count > 0 {
+                for t in self.transaction {
+                    let (list, _) = t.0()
+                    list()
+                }
+                self.tableView?.reloadData()
+                self.transaction.removeAll(keepCapacity: true)
+            }
 
             self.updating = false
         }
@@ -358,10 +369,12 @@ extension TableController {
     public func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
 
         let r = self.rows(indexPath)
-        if r.autoDeselect {
+        r.selected = true
+        r.didSelect()
+
+        if !r.selected {
             tableView.deselectRowAtIndexPath(indexPath, animated: true)
         }
-        r.didSelect()
     }
 
     public func tableView(tableView: UITableView, accessoryButtonTappedForRowWithIndexPath indexPath: NSIndexPath) {

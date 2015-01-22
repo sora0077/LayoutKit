@@ -13,8 +13,8 @@ public class TableSection: NSObject {
     public private(set) var rows: [TableRowElement] = []
     private var displayedRows: [TableRowElement] = []
 
-    var index: Int {
-        return find(self.controller!.sections, self)!
+    var index: Int? {
+        return find(self.controller!.sections, self)
     }
 
     var transactionCache: [(UITableView?) -> Void] = []
@@ -40,15 +40,13 @@ public class TableSection: NSObject {
 
     public func append(newElement: TableRowElement) {
 
-        self.insert(newElement, atIndex: NSNotFound)
+        self.insert(newElement, atIndex: self.rows.count)
     }
 
-    public func insert(newElement: TableRowElement, atIndex index: Int) {
-
-        let index = index == self.rows.count ? NSNotFound : index
+    public func insert(newElement: TableRowElement, atIndex index: @autoclosure () -> Int) {
 
         let block: TableController.Processor = {
-            let index = index == NSNotFound ? self.rows.count : index
+            let index = index()
             let indexes = NSIndexSet(index: index)
 
             let list: TableController.ListProcess = {
@@ -63,7 +61,7 @@ public class TableSection: NSObject {
         }
 
         if let c = self.controller {
-            c.transaction.append(block, .Insertion, index)
+            c.transaction.append(block, .Insertion, index())
         } else {
             let (list, _) = block()
             list()
@@ -77,10 +75,10 @@ public class TableSection: NSObject {
         }
     }
 
-    func removeAtIndex(index: Int) {
+    func removeAtIndex(index: @autoclosure () -> Int) {
 
         let block: TableController.Processor = {
-            let index = index == NSNotFound ? self.rows.count - 1 : index
+            let index = index()
             let indexes = NSIndexSet(index: index)
 
             let list: TableController.ListProcess = {
@@ -94,7 +92,7 @@ public class TableSection: NSObject {
         }
 
         if let c = self.controller {
-            c.transaction.append(block, .Removal, index)
+            c.transaction.append(block, .Removal, index())
         } else {
             let (list, _) = block()
             list()
@@ -110,7 +108,7 @@ public class TableSection: NSObject {
 
     public func removeLast() {
 
-        self.removeAtIndex(NSNotFound)
+        self.removeAtIndex(self.rows.count - 1)
     }
 
     func replaceAtIndex(index: Int, to: (@autoclosure () -> TableRowElement)? = nil) {
@@ -205,7 +203,7 @@ public class TableSection: NSObject {
 
             var indexPaths: [NSIndexPath] = []
             indexes.enumerateIndexesUsingBlock({ (i, stop) -> Void in
-                let indexPath = NSIndexPath(forRow: i, inSection: self.index)
+                let indexPath = NSIndexPath(forRow: i, inSection: self.index!)
                 indexPaths.append(indexPath)
             })
 

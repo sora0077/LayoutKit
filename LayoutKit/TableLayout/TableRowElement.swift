@@ -11,15 +11,22 @@ import UIKit
 public class TableRowElement: LayoutElement {
 
     /// section, row
-    var index: (Int, Int) {
-        let section = self.section!.index
-        let index = find(self.section!.rows, self)!
-        return (section, index)
+    var index: (Int?, Int?) {
+
+        if let s = self.section {
+
+            let section = s.index
+            if let index = find(s.rows, self) {
+                return (section, index)
+            }
+            return (section, nil)
+        }
+        return (nil, nil)
     }
 
     public var accessoryType: UITableViewCellAccessoryType = .None
     public var selectionStyle: UITableViewCellSelectionStyle = .Default
-    public var autoDeselect: Bool = true
+    public var selected: Bool = false
 
     weak var section: TableSection?
 
@@ -46,7 +53,7 @@ public class TableRowElement: LayoutElement {
     }
 
     public func didSelect() {
-
+        self.selected = false
     }
 
     public func accessoryButtonTapped() {
@@ -55,7 +62,7 @@ public class TableRowElement: LayoutElement {
 
     public func append(newElement: TableRowElement, offset: Int = 1) {
 
-        self.section?.insert(newElement, atIndex: self.index.1 + offset)
+        self.section?.insert(newElement, atIndex: self.index.1! + offset)
     }
 
     public func remove() {
