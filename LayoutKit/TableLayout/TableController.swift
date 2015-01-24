@@ -44,13 +44,13 @@ public final class TableController: NSObject {
     var registeredCells: [String: Bool] = [:]
     var registeredHeaderFooterViews: [String: Bool] = [:]
 
-    var displayLink: CADisplayLink = CADisplayLink()
+    var displayLink: CADisplayLink?
 
     var transaction: [(Processor, NSKeyValueChange, Int)] = []
     weak var altDelegate: UITableViewDelegate?
     weak var altDataSource: UITableViewDataSource?
 
-    let responder: UIResponder?
+    weak var responder: UIResponder?
 
     private var updating: Bool = false
 
@@ -58,9 +58,6 @@ public final class TableController: NSObject {
         self.responder = responder
         
         super.init()
-        self.displayLink = CADisplayLink(target: self, selector: "update")
-        self.displayLink.frameInterval = 20
-        self.displayLink.addToRunLoop(NSRunLoop.currentRunLoop(), forMode: NSRunLoopCommonModes)
 
         let section = TableSection()
         section.controller = self
@@ -74,7 +71,7 @@ public final class TableController: NSObject {
     @objc
     func update() {
 
-        println(self, self.displayLink.timestamp)
+        println(self.displayLink?.timestamp)
 
         if self.transaction.count > 0 && self.updating == false {
             self.updating = true
@@ -122,9 +119,21 @@ public final class TableController: NSObject {
                 self.tableView?.reloadData()
                 self.transaction.removeAll(keepCapacity: true)
             }
-
+//            self.displayLink?.removeFromRunLoop(NSRunLoop.currentRunLoop(), forMode: NSRunLoopCommonModes)
+            self.displayLink?.invalidate()
+            self.displayLink = nil
             self.updating = false
         }
+    }
+
+    func addTransaction(t: (Processor, NSKeyValueChange, Int)) {
+
+        if self.displayLink == nil {
+            self.displayLink = CADisplayLink(target: self, selector: "update")
+            self.displayLink?.frameInterval = 20
+            self.displayLink?.addToRunLoop(NSRunLoop.currentRunLoop(), forMode: NSRunLoopCommonModes)
+        }
+        self.transaction.append(t)
     }
 
     public func append(newElement: TableSection) {
@@ -148,7 +157,7 @@ public final class TableController: NSObject {
 
             return (list, ui)
         }
-        self.transaction.append(block, .Insertion, index())
+        self.addTransaction((block, .Insertion, index()))
     }
 
     public func extend(newElements: [TableSection]) {
@@ -172,7 +181,7 @@ public final class TableController: NSObject {
             }
             return (list, ui)
         }
-        self.transaction.append(block, .Removal, index())
+        self.addTransaction((block, .Removal, index()))
     }
 
     public func removeAll() {
@@ -193,7 +202,7 @@ public final class TableController: NSObject {
 
             let list: TableController.ListProcess = {}
             let ui: TableController.UIProcess = { (_) in }
-            self.transaction.append({ (list, ui) }, .Replacement, index)
+            self.addTransaction(({ (list, ui) }, .Replacement, index))
         }
         func outlineRefresh(section: TableSection, old: TableSection) {
 
@@ -214,7 +223,7 @@ public final class TableController: NSObject {
                 return ({}, { (_) in })
             }
 
-            self.transaction.append(block, .Replacement, index)
+            self.addTransaction((block, .Replacement, index))
         }
         if let section = to?() {
             let old = self.sections[index]
@@ -240,20 +249,16 @@ public final class TableController: NSObject {
 
         if let t = self.tableView {
 
-            t.beginUpdates()
-
             switch kind {
             case .Setting:
                 break
             case .Insertion:
                 t.insertSections(indexes, withRowAnimation: .Automatic)
             case .Replacement:
-                break
+                t.reloadSections(indexes, withRowAnimation: .Automatic)
             case .Removal:
-                break
+                t.deleteSections(indexes, withRowAnimation: .Automatic)
             }
-
-            t.endUpdates()
         }
     }
 }

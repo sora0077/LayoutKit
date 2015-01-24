@@ -22,12 +22,12 @@ class MenuViewController: UIViewController {
         self.tableView.controller = TableController(responder: self)
         if let c = self.tableView.controller {
             c.sections[0].append(
-                MenuRow<UITableViewCell.StyleDefault>(title: "セルの大量追加・削除・置換") {
+                MenuRow<UITableViewCell.StyleDefault>(title: "セルの大量追加・削除・置換") { [unowned self] in
                     self.segueAction("ViewController")
                 }
             )
             c.sections[0].append(
-                MenuRow<UITableViewCell.StyleDefault>(title: "セルの追加読み込み"){
+                MenuRow<UITableViewCell.StyleDefault>(title: "セルの追加読み込み"){ [unowned self] in
                     self.segueAction("TimelineViewController") {
                         if let vc = $0 as? TimelineViewController {
                             vc.uiType = .Invisible
@@ -36,7 +36,7 @@ class MenuViewController: UIViewController {
                 }
             )
             c.sections[0].append(
-                MenuRow<UITableViewCell.StyleDefault>(title: "セルの追加読み込み UI付き"){
+                MenuRow<UITableViewCell.StyleDefault>(title: "セルの追加読み込み UI付き"){ [unowned self] in
                     self.segueAction("TimelineViewController") {
                         if let vc = $0 as? TimelineViewController {
                             vc.uiType = .UI

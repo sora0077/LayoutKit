@@ -24,8 +24,9 @@ class TimelineViewController: UIViewController {
             case .Invisible:
 
                 section.append(
-                    TimelineInvisibleSentinelRow {
-                        vc.appendRow()
+                    TimelineInvisibleSentinelRow { [weak vc] in
+                        vc?.appendRow()
+                        return
                     }
                 )
 
@@ -48,8 +49,9 @@ class TimelineViewController: UIViewController {
                 section.append(TimelineRow<UITableViewCell.StyleDefault>(title: "\(vc.idx++)"))
                 section.append(TimelineRow<UITableViewCell.StyleDefault>(title: "\(vc.idx++)"))
                 section.append(
-                    TimelineLoadingSentinelRow {
-                        vc.appendRow()
+                    TimelineLoadingSentinelRow { [weak vc] in
+                        vc?.appendRow()
+                        return
                     }
                 )
             }

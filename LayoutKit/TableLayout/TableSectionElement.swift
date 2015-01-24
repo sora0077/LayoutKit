@@ -61,7 +61,7 @@ public class TableSection: NSObject {
         }
 
         if let c = self.controller {
-            c.transaction.append(block, .Insertion, index())
+            c.addTransaction((block, .Insertion, index()))
         } else {
             let (list, _) = block()
             list()
@@ -92,7 +92,7 @@ public class TableSection: NSObject {
         }
 
         if let c = self.controller {
-            c.transaction.append(block, .Removal, index())
+            c.addTransaction((block, .Removal, index()))
         } else {
             let (list, _) = block()
             list()
@@ -118,7 +118,7 @@ public class TableSection: NSObject {
             if let c = self.controller {
                 let list: TableController.ListProcess = {}
                 let ui: TableController.UIProcess = { (_) in }
-                c.transaction.append({ (list, ui) }, .Replacement, index)
+                c.addTransaction(({ (list, ui) }, .Replacement, index))
             }
         }
         func outlineRefresh(row: TableRowElement, old: TableRowElement) {
@@ -141,7 +141,7 @@ public class TableSection: NSObject {
             }
 
             if let c = self.controller {
-                c.transaction.append(block, .Replacement, index)
+                c.addTransaction((block, .Replacement, index))
             } else {
                 let (list, _) = block()
                 list()
@@ -183,7 +183,7 @@ public class TableSection: NSObject {
         }
 
         if let c = self.controller {
-            c.transaction.append(block, .Removal, initialIndex!)
+            c.addTransaction((block, .Removal, initialIndex!))
         } else {
             let (list, _) = block()
             list()
