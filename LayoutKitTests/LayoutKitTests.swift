@@ -47,7 +47,29 @@ class TextRow<T: UITableViewCell where T: TableElementRendererProtocol>: TableRo
     }
 }
 
+extension XCTestCase {
+
+    func async(_ expire: NSTimeInterval = 10, _ queue: dispatch_queue_t = dispatch_get_main_queue(), delay: NSTimeInterval = 0, description: String, _ block: () -> Void) {
+
+        let expect = self.expectationWithDescription(description)
+        let delay = delay * Double(NSEC_PER_SEC)
+        let time  = dispatch_time(DISPATCH_TIME_NOW, Int64(delay))
+
+        dispatch_after(time, queue) {
+            block()
+
+            expect.fulfill()
+        }
+
+        self.waitForExpectationsWithTimeout(expire, handler: { (error) -> Void in
+            
+        })
+    }
+}
+
 class LayoutKitTests: XCTestCase {
+
+
     
     override func setUp() {
         super.setUp()
@@ -58,18 +80,6 @@ class LayoutKitTests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
         super.tearDown()
     }
-    
-    func testExample() {
-        // This is an example of a functional test case.
-        XCTAssert(true, "Pass")
-
-//        let cell = UITableViewCell(style: .Default, reuseIdentifier: "")
-//
-//        let row = TableRowElement()
-//        cell.rowElement = row
-//
-//        XCTAssertEqual(cell.rowElement!.dynamicType.identifier, "a", "")
-    }
 
     func test_テーブルビューの入れ替えが正しく行われること() {
 
@@ -78,12 +88,12 @@ class LayoutKitTests: XCTestCase {
 
         tableView.delegate = initialDelegate
 
-        let controller = TableController()
+        let controller = TableController(responder: nil)
         tableView.controller = controller
 
         XCTAssertTrue(tableView.delegate! === tableView.controller!, "")
 
-        let altController = TableController()
+        let altController = TableController(responder: nil)
 
         tableView.controller = altController
 
@@ -97,27 +107,41 @@ class LayoutKitTests: XCTestCase {
 
     }
 
+    func test_セルの追加の動作() {
+
+        let row = TextRow<UITableViewCell.StyleDefault>(title: "test")
+        let controller = TableController(responder: nil)
+        let tableView = UITableView(frame: CGRectZero, style: .Plain)
+
+
+        tableView.controller = controller
+        controller.sections[0].append(row)
+
+        XCTAssertEqual(0, controller.sections[0].rows.count, "追加直後は反映されていない")
+
+        controller.invalidate()
+        XCTAssertEqual(1, controller.sections[0].rows.count, "invalidate()は強制的に再描画を行う")
+
+    }
+
     func test_セルの入れ替えでrendererとフラグがそれぞれの状態になっているか() {
 
         let row = TextRow<UITableViewCell.StyleDefault>(title: "test")
-        let controller = TableController()
+        let controller = TableController(responder: nil)
         let tableView = UITableView(frame: CGRectZero, style: .Plain)
 
-        XCTAssertEqual(1, controller.sections.count, "")
 
         tableView.controller = controller
-
-        controller[0].append(row)
-
-
-        XCTAssertEqual(1, controller.sections[0].rows.count, "")
+        controller.sections[0].append(row)
 
         XCTAssertFalse(row.willAppeared, "")
+
+        controller.invalidate()
 
         tableView.reloadData()
         let indexPath = NSIndexPath(forRow: 0, inSection: 0)
 
-        tableView.cellForRowAtIndexPath(indexPath)!
+        tableView.cellForRowAtIndexPath(indexPath)
 
         XCTAssertTrue(row.willAppeared, "")
         XCTAssertNotNil(row.renderer, "")
@@ -125,22 +149,16 @@ class LayoutKitTests: XCTestCase {
         let altRow = TextRow<UITableViewCell.StyleDefault>(title: "alt")
         row.replace(to: altRow)
 
-        tableView.cellForRowAtIndexPath(indexPath)!
+        tableView.cellForRowAtIndexPath(indexPath)
 
-        let expect = self.expectationWithDescription("replace")
-        let delay = 0.5 * Double(NSEC_PER_SEC)
-        let time  = dispatch_time(DISPATCH_TIME_NOW, Int64(delay))
-        dispatch_after(time, dispatch_get_main_queue(), {
+        self.async(delay: 2, description: "") {
+
             XCTAssertTrue(row.didDisappeared, "")
             XCTAssertNil(row.renderer, "")
             XCTAssertNotNil(altRow.renderer, "")
 
-            expect.fulfill()
-        })
-
-        self.waitForExpectationsWithTimeout(3, handler: { (error) -> Void in
-
-        })
+            XCTAssertEqual(altRow, controller.sections[0].rows[0], "")
+        }
     }
     
     func testPerformanceExample() {

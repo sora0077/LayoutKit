@@ -136,6 +136,11 @@ public final class TableController: NSObject {
         self.transaction.append(t)
     }
 
+    public func invalidate() {
+
+        self.update()
+    }
+
     public func append(newElement: TableSection) {
 
         self.insert(newElement, atIndex: self.sections.count)
