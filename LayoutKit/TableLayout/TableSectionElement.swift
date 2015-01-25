@@ -241,15 +241,6 @@ public class TableSectionElement: LayoutElement {
 
     var sectionType: SectionType! {
 
-        willSet {
-
-            if self.sectionType != nil {
-                if newValue != self.sectionType {
-                    self.viewWillDisappear()
-                }
-            }
-        }
-
         didSet {
 
             if oldValue != nil {
@@ -293,21 +284,16 @@ public class TableSectionRendererElement<T: UITableViewHeaderFooterView>: TableS
 
     public var renderer: Renderer? {
 
-        willSet {
-            if newValue != self.renderer {
-                if self.renderer != nil {
-                    self.viewWillDisappear()
+        didSet {
+            if let renderer = self.renderer {
+                switch self.sectionType! {
+                case .Header:
+                    renderer.sectionHeaderElement?.viewWillAppear()
+                case .Footer:
+                    renderer.sectionFooterElement?.viewWillAppear()
                 }
             }
-            switch self.sectionType! {
-            case .Header:
-                newValue?.sectionHeaderElement?.viewWillAppear()
-            case .Footer:
-                newValue?.sectionFooterElement?.viewWillAppear()
-            }
-        }
 
-        didSet {
             if oldValue != self.renderer {
                 switch self.sectionType! {
                 case .Header:
@@ -315,10 +301,6 @@ public class TableSectionRendererElement<T: UITableViewHeaderFooterView>: TableS
                 case .Footer:
                     oldValue?.sectionFooterElement?.viewDidDisappear()
                 }
-            }
-
-            if self.renderer != nil {
-                self.viewDidAppear()
             }
         }
     }

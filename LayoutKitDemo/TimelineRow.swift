@@ -18,7 +18,7 @@ class TimelineRow<T: UITableViewCell where T: TableElementRendererProtocol>: Tab
         super.init()
     }
 
-    override func viewDidAppear() {
+    override func viewWillAppear() {
 
         self.renderer?.textLabel?.text = "cell \(self.title)"
     }

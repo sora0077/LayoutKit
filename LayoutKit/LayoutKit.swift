@@ -33,8 +33,8 @@ public class LayoutElement: NSObject {
         }
     }
 
-    public var superelement: LayoutElement?
-    public var subelements: [LayoutElement] = []
+//    public var superelement: LayoutElement?
+//    public var subelements: [LayoutElement] = []
 
     override public init() {
         super.init()
@@ -57,14 +57,6 @@ public class LayoutElement: NSObject {
 //    }
 
     public func viewWillAppear() {
-
-    }
-
-    public func viewDidAppear() {
-
-    }
-    
-    public func viewWillDisappear() {
 
     }
 

@@ -21,7 +21,7 @@ class MenuRow<T: UITableViewCell where T: TableElementRendererProtocol>: TableRo
         super.init()
     }
 
-    override func viewDidAppear() {
+    override func viewWillAppear() {
 
         self.renderer?.textLabel?.text = self.title
     }

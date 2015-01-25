@@ -21,8 +21,7 @@ class NormalSection<T: UITableViewHeaderFooterView>: TableSectionRendererElement
         self.size.height = 20
     }
 
-
-    override func viewDidAppear() {
+    override func viewWillAppear() {
 
 //        self.renderer?.contentView.backgroundColor = UIColor.blueColor()
         self.renderer?.textLabel.text = self.title

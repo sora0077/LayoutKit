@@ -23,7 +23,7 @@ class TimelineSentinelRow
         super.init()
     }
 
-    override func viewDidAppear() {
+    override func viewWillAppear() {
 
         self.loadingDidStart(done: 0)
     }
@@ -66,7 +66,7 @@ class _TimelineLoadingSentinelRow
 
     }
 
-    override func viewDidAppear() {
+    override func viewWillAppear() {
 
         self.loadingDidStart(done: 1)
 

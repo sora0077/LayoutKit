@@ -19,9 +19,7 @@ class TextRow<T: UITableViewCell where T: TableElementRendererProtocol>: TableRo
     private var title: String
 
     private var willAppeared: Bool = false
-    private var didAppeared: Bool = false
 
-    private var willDisappeared: Bool = false
     private var didDisappeared: Bool = false
 
     init(title: String) {
@@ -32,14 +30,6 @@ class TextRow<T: UITableViewCell where T: TableElementRendererProtocol>: TableRo
 
     override func viewWillAppear() {
         self.willAppeared = true
-    }
-
-    override func viewDidAppear() {
-        self.didAppeared = true
-    }
-
-    override func viewWillDisappear() {
-        self.willDisappeared = true
     }
 
     override func viewDidDisappear() {

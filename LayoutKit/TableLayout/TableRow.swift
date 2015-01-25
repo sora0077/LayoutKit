@@ -100,22 +100,13 @@ public class TableRow<T: UITableViewCell where T: TableElementRendererProtocol>:
 
     public var renderer: Renderer? {
 
-        willSet {
-            if newValue != self.renderer {
-                if self.renderer != nil {
-                    self.viewWillDisappear()
-                }
-            }
-            newValue?.rowElement?.viewWillAppear()
-        }
-
         didSet {
             if oldValue != self.renderer {
                 oldValue?.rowElement?.viewDidDisappear()
             }
 
             if self.renderer != nil {
-                self.viewDidAppear()
+                self.viewWillAppear()
             }
         }
     }
