@@ -14,7 +14,7 @@ protocol TextRowRendererAcceptable: TableElementRendererProtocol {
     weak var titleLabel: UILabel! { get }
 }
 
-class TextRow<T: UITableViewCell where T: TextRowRendererAcceptable>: TableRowRendererElement<T> {
+class TextRow<T: UITableViewCell where T: TextRowRendererAcceptable>: TableRow<T> {
 
     var title: String {
         willSet {

@@ -11,7 +11,7 @@ import LayoutKit
 
 
 class TimelineSentinelRow
-    <T: UITableViewCell where T: TableElementRendererProtocol>: TableRowRendererElement<T> {
+    <T: UITableViewCell where T: TableElementRendererProtocol>: TableRow<T> {
 
     typealias SelfType = TimelineSentinelRow
 

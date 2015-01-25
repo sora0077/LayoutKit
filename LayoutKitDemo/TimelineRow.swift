@@ -9,7 +9,7 @@
 import UIKit
 import LayoutKit
 
-class TimelineRow<T: UITableViewCell where T: TableElementRendererProtocol>: TableRowRendererElement<T> {
+class TimelineRow<T: UITableViewCell where T: TableElementRendererProtocol>: TableRow<T> {
 
     private let title: String
 

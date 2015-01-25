@@ -10,8 +10,8 @@ import UIKit
 
 public class TableSection: NSObject {
 
-    public private(set) var rows: [TableRowElement] = []
-    private var displayedRows: [TableRowElement] = []
+    public private(set) var rows: [TableRowBase] = []
+    private var displayedRows: [TableRowBase] = []
 
     var index: Int? {
         return find(self.controller!.sections, self)
@@ -38,12 +38,12 @@ public class TableSection: NSObject {
         return self.controller?.responder
     }
 
-    public func append(newElement: TableRowElement) {
+    public func append(newElement: TableRowBase) {
 
         self.insert(newElement, atIndex: self.rows.count)
     }
 
-    public func insert(newElement: TableRowElement, atIndex index: @autoclosure () -> Int) {
+    public func insert(newElement: TableRowBase, atIndex index: @autoclosure () -> Int) {
 
         let block: TableController.Processor = {
             let index = index()
@@ -68,7 +68,7 @@ public class TableSection: NSObject {
         }
     }
 
-    public func extend(newElements: [TableRowElement]) {
+    public func extend(newElements: [TableRowBase]) {
 
         for e in newElements {
             self.append(e)
@@ -111,7 +111,7 @@ public class TableSection: NSObject {
         self.removeAtIndex(self.rows.count - 1)
     }
 
-    func replaceAtIndex(index: Int, to: (@autoclosure () -> TableRowElement)? = nil) {
+    func replaceAtIndex(index: Int, to: (@autoclosure () -> TableRowBase)? = nil) {
 
         func inlineRefresh() {
 
@@ -121,7 +121,7 @@ public class TableSection: NSObject {
                 c.addTransaction(({ (list, ui) }, .Replacement, index))
             }
         }
-        func outlineRefresh(row: TableRowElement, old: TableRowElement) {
+        func outlineRefresh(row: TableRowBase, old: TableRowBase) {
 
             let block: TableController.Processor = {
                 if let index = find(self.rows, old) {
@@ -159,7 +159,7 @@ public class TableSection: NSObject {
         }
     }
 
-    public func remove(row: TableRowElement) {
+    public func remove(row: TableRowBase) {
 
         let initialIndex = find(self.rows, row)
         if initialIndex == nil {
@@ -190,7 +190,7 @@ public class TableSection: NSObject {
         }
     }
 
-    public func replace(row: TableRowElement, to: (@autoclosure () -> TableRowElement)? = nil) {
+    public func replace(row: TableRowBase, to: (@autoclosure () -> TableRowBase)? = nil) {
 
         if let index = find(self.rows, row) {
             self.replaceAtIndex(index, to: to)

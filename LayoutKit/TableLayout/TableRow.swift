@@ -8,7 +8,7 @@
 
 import UIKit
 
-public class TableRowElement: LayoutElement {
+public class TableRowBase: LayoutElement {
 
     /// section, row
     var index: (Int?, Int?) {
@@ -31,7 +31,7 @@ public class TableRowElement: LayoutElement {
     weak var section: TableSection?
 
     class func register(tableView: UITableView) {
-
+        fatalError("")
     }
 
     override public init() {
@@ -60,7 +60,7 @@ public class TableRowElement: LayoutElement {
         
     }
 
-    public func append(newElement: TableRowElement) {
+    public func append(newElement: TableRowBase) {
 
         self.section?.insert(newElement, atIndex: self.index.1! + 1)
     }
@@ -70,13 +70,13 @@ public class TableRowElement: LayoutElement {
         self.section?.remove(self)
     }
 
-    public func replace(to: (@autoclosure () -> TableRowElement)? = nil) {
+    public func replace(to: (@autoclosure () -> TableRowBase)? = nil) {
 
         self.section?.replace(self, to: to)
     }
 }
 
-public class TableRowRendererElement<T: UITableViewCell where T: TableElementRendererProtocol>: TableRowElement, RendererProtocol {
+public class TableRow<T: UITableViewCell where T: TableElementRendererProtocol>: TableRowBase, RendererProtocol {
 
     typealias Renderer = T
 
@@ -143,12 +143,12 @@ public class TableRowRendererElement<T: UITableViewCell where T: TableElementRen
 private var UITableViewCell_rowElement: UInt8 = 0
 extension UITableViewCell {
 
-    var rowElement: TableRowElement? {
+    var rowElement: TableRowBase? {
 
         get {
             let val: AnyObject! = objc_getAssociatedObject(self, &UITableViewCell_rowElement)
 
-            return val as? TableRowElement
+            return val as? TableRowBase
         }
 
         set {

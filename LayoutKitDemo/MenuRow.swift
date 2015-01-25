@@ -9,7 +9,7 @@
 import UIKit
 import LayoutKit
 
-class MenuRow<T: UITableViewCell where T: TableElementRendererProtocol>: TableRowRendererElement<T> {
+class MenuRow<T: UITableViewCell where T: TableElementRendererProtocol>: TableRow<T> {
 
     private let title: String
     private let action: () -> Void

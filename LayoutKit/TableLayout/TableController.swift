@@ -291,7 +291,7 @@ extension TableController {
         self.tableView = nil
     }
 
-    private func rows(indexPath: NSIndexPath) -> TableRowElement {
+    private func rows(indexPath: NSIndexPath) -> TableRowBase {
 
         let s = self.sections[indexPath.section]
         let r = s.rows[indexPath.row]
