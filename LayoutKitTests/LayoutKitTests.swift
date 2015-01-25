@@ -14,7 +14,7 @@ class DummyDelegate: NSObject, UITableViewDelegate {
 
 }
 
-class TextRow<T: UITableViewCell where T: TableElementRendererProtocol>: TableRowRendererElement<T> {
+class TextRow<T: UITableViewCell where T: TableElementRendererProtocol>: TableRow<T> {
 
     private var title: String
 
