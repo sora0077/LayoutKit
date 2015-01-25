@@ -71,6 +71,41 @@ class ViewController: UIViewController {
                         }
                     }
                 }
+                let when  = dispatch_time(DISPATCH_TIME_NOW, Int64(delay))
+                dispatch_after(when, dispatch_get_main_queue()) { () -> Void in
+
+                    if let c = self.tableView.controller {
+
+                        let target = c.sections[0].rows[0]
+                        let into = c.sections[1].rows[0]
+
+                        
+                        if let t = target as? TextRow<ColoredTextTableViewCell> {
+                            t.title = "move move "
+                        }
+
+                        target.remove()
+                        into.append(target)
+
+                    }
+                    let when  = dispatch_time(DISPATCH_TIME_NOW, Int64(delay))
+                    dispatch_after(when, dispatch_get_main_queue()) { () -> Void in
+
+                        if let c = self.tableView.controller {
+
+                            let target = c.sections[1].rows[0]
+                            target.size.height = 90
+                        }
+                        let when  = dispatch_time(DISPATCH_TIME_NOW, Int64(delay))
+                        dispatch_after(when, dispatch_get_main_queue()) { () -> Void in
+
+                            if let c = self.tableView.controller {
+
+                                c.removeAll()
+                            }
+                        }
+                    }
+                }
             }
         }
     }

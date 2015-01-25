@@ -60,9 +60,9 @@ public class TableRowElement: LayoutElement {
         
     }
 
-    public func append(newElement: TableRowElement, offset: Int = 1) {
+    public func append(newElement: TableRowElement) {
 
-        self.section?.insert(newElement, atIndex: self.index.1! + offset)
+        self.section?.insert(newElement, atIndex: self.index.1! + 1)
     }
 
     public func remove() {
@@ -90,6 +90,12 @@ public class TableRowRendererElement<T: UITableViewCell where T: TableElementRen
 
     override class func register(tableView: UITableView) {
         T.register(tableView)
+    }
+
+    override public var size: CGSize {
+        didSet {
+            self.replace()
+        }
     }
 
     public var renderer: Renderer? {

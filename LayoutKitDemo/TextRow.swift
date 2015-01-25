@@ -16,7 +16,11 @@ protocol TextRowRendererAcceptable: TableElementRendererProtocol {
 
 class TextRow<T: UITableViewCell where T: TextRowRendererAcceptable>: TableRowRendererElement<T> {
 
-    private var title: String
+    var title: String {
+        willSet {
+            self.renderer?.titleLabel.text = newValue
+        }
+    }
 
     init(title: String) {
         self.title = title
