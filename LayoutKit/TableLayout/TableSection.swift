@@ -21,13 +21,13 @@ public class TableSection: NSObject {
 
     weak var controller: TableController?
 
-    public var header: TableSectionElement? {
+    public var header: TableHeaderFooterBase? {
         willSet {
             newValue?.sectionType = .Header
             newValue?.section = self
         }
     }
-    public var footer: TableSectionElement? {
+    public var footer: TableHeaderFooterBase? {
         willSet {
             newValue?.sectionType = .Footer
             newValue?.section = self
@@ -229,7 +229,7 @@ enum SectionType {
     case Footer
 }
 
-public class TableSectionElement: LayoutElement {
+public class TableHeaderFooterBase: LayoutElement {
 
     override class var identifier: String {
         return ""
@@ -266,7 +266,7 @@ public class TableSectionElement: LayoutElement {
     }
 }
 
-public class TableSectionRendererElement<T: UITableViewHeaderFooterView>: TableSectionElement, RendererProtocol {
+public class TableHeaderFooter<T: UITableViewHeaderFooterView>: TableHeaderFooterBase, RendererProtocol {
 
     typealias Renderer = T
 
@@ -337,12 +337,12 @@ extension UITableViewHeaderFooterView: TableElementRendererProtocol {
         tableView.registerClass(self, forHeaderFooterViewReuseIdentifier: self.identifier)
     }
 
-    var sectionHeaderElement: TableSectionElement? {
+    var sectionHeaderElement: TableHeaderFooterBase? {
 
         get {
             let val: AnyObject! = objc_getAssociatedObject(self, &UITableViewHeaderFooterView_sectionHeaderElement)
 
-            return val as? TableSectionElement
+            return val as? TableHeaderFooterBase
         }
 
         set {
@@ -350,12 +350,12 @@ extension UITableViewHeaderFooterView: TableElementRendererProtocol {
         }
     }
 
-    var sectionFooterElement: TableSectionElement? {
+    var sectionFooterElement: TableHeaderFooterBase? {
 
         get {
             let val: AnyObject! = objc_getAssociatedObject(self, &UITableViewHeaderFooterView_sectionHeaderElement)
 
-            return val as? TableSectionElement
+            return val as? TableHeaderFooterBase
         }
 
         set {

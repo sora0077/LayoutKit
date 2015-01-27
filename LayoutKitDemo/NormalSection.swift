@@ -9,7 +9,7 @@
 import UIKit
 import LayoutKit
 
-class NormalSection<T: UITableViewHeaderFooterView>: TableSectionRendererElement<T> {
+class NormalSection<T: UITableViewHeaderFooterView>: TableHeaderFooter<T> {
 
     private let title: String
 

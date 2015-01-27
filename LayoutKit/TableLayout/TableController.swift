@@ -71,8 +71,6 @@ public final class TableController: NSObject {
     @objc
     func update() {
 
-        println(self.displayLink?.timestamp)
-
         if self.transaction.count > 0 && self.updating == false {
             self.updating = true
 
