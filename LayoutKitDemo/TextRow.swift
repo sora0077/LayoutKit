@@ -28,7 +28,7 @@ class TextRow<T: UITableViewCell where T: TextRowRendererAcceptable>: TableRow<T
         super.init()
     }
 
-    override func viewWillAppear() {
+    override func viewDidLayoutSubviews() {
 
         println(("viewDidAppear", self.title))
 

@@ -343,16 +343,25 @@ extension TableController {
         let dequeue: DequeueFunc = tableView.dequeueReusableCellWithIdentifier
         let cell = dequeue(identifier, forIndexPath: indexPath) as UITableViewCell
         cell.rowElement = r
+        r.setRendererView(cell)
+        
         cell.accessoryType = r.accessoryType
         cell.selectionStyle = r.selectionStyle
 
+        switch r.separatorStyle {
+        case .None:
+            cell.separatorInset.right = tableView.frame.width - cell.separatorInset.left
+        default:
+            cell.separatorInset = r.separatorInset
+
+        }
         return cell
     }
 
     public func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
 
         if let r = cell.rowElement {
-            r.setRendererView(cell)
+            r.viewDidLayoutSubviews()
         }
     }
 

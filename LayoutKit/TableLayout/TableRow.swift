@@ -26,6 +26,8 @@ public class TableRowBase: LayoutElement {
 
     public var accessoryType: UITableViewCellAccessoryType = .None
     public var selectionStyle: UITableViewCellSelectionStyle = .Default
+    public var separatorStyle: UITableViewCellSeparatorStyle = .SingleLine // SingleLineEtched is not supported
+    public var separatorInset: UIEdgeInsets = UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 0)
     public var selected: Bool = false
 
     weak var section: TableSection?
@@ -73,6 +75,10 @@ public class TableRowBase: LayoutElement {
     public func replace(to: (@autoclosure () -> TableRowBase)? = nil) {
 
         self.section?.replace(self, to: to)
+    }
+
+    public func willMoveToRenderer(view: UITableViewCell?) {
+
     }
 }
 
@@ -143,6 +149,11 @@ extension UITableViewCell {
         }
 
         set {
+            if let newValue = newValue {
+                newValue.willMoveToRenderer(self)
+            } else {
+                self.rowElement?.willMoveToRenderer(nil)
+            }
             objc_setAssociatedObject(self, &UITableViewCell_rowElement, newValue, objc_AssociationPolicy(OBJC_ASSOCIATION_RETAIN_NONATOMIC))
         }
     }

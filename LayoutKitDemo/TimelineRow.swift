@@ -16,9 +16,17 @@ class TimelineRow<T: UITableViewCell where T: TableElementRendererProtocol>: Tab
     init(title: String = "") {
         self.title = title
         super.init()
+
     }
 
     override func viewWillAppear() {
+
+        if self.title == "10" {
+            self.separatorStyle = .None
+        }
+    }
+
+    override func viewDidLayoutSubviews() {
 
         self.renderer?.textLabel?.text = "cell \(self.title)"
     }
