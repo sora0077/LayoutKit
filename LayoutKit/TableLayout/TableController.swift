@@ -25,6 +25,9 @@ public protocol TableElementRendererProtocol {
     class func register(tableView: UITableView)
 }
 
+/**
+*  <#Description#>
+*/
 public final class TableController: NSObject {
 
     typealias ListProcess = () -> Void
@@ -38,7 +41,7 @@ public final class TableController: NSObject {
 
     public private(set) var sections: [TableSection] = []
 
-    weak var tableView: UITableView?
+    public internal(set) weak var tableView: UITableView?
 
 
     var registeredCells: [String: Bool] = [:]
@@ -54,12 +57,15 @@ public final class TableController: NSObject {
 
     private var updating: Bool = false
 
-    public init(responder: UIResponder?) {
+    /**
+    :param: responder <#responder description#>
+    :param: section   <#section description#>
+    */
+    public required init(responder: UIResponder?, section: TableSection = TableSection()) {
         self.responder = responder
         
         super.init()
 
-        let section = TableSection()
         section.controller = self
         self.sections = [section]
     }
@@ -67,6 +73,9 @@ public final class TableController: NSObject {
     deinit {
 
     }
+}
+
+extension TableController {
 
     @objc
     func update() {
@@ -93,12 +102,12 @@ public final class TableController: NSObject {
                     self.tableView?.endUpdates()
                     self.tableView?.beginUpdates()
                 }
-                
+
                 operations.append({
                     let (list, ui) = vv.0()
                     list()
                     ui(tableView: self.tableView)
-                }, vv.2)
+                    }, vv.2)
 
                 kind = vv.1
             }
@@ -117,7 +126,7 @@ public final class TableController: NSObject {
                 self.tableView?.reloadData()
                 self.transaction.removeAll(keepCapacity: true)
             }
-//            self.displayLink?.removeFromRunLoop(NSRunLoop.currentRunLoop(), forMode: NSRunLoopCommonModes)
+
             self.displayLink?.invalidate()
             self.displayLink = nil
             self.updating = false
@@ -126,18 +135,25 @@ public final class TableController: NSObject {
 
     func addTransaction(t: (Processor, NSKeyValueChange, Int)) {
 
-        if self.displayLink == nil {
-            self.displayLink = CADisplayLink(target: self, selector: "update")
-            self.displayLink?.frameInterval = 20
-            self.displayLink?.addToRunLoop(NSRunLoop.currentRunLoop(), forMode: NSRunLoopCommonModes)
+        dispatch_async(dispatch_get_main_queue()) {
+            if self.displayLink == nil {
+                self.displayLink = CADisplayLink(target: self, selector: "update")
+                self.displayLink?.frameInterval = 20
+                self.displayLink?.addToRunLoop(NSRunLoop.currentRunLoop(), forMode: NSRunLoopCommonModes)
+            }
+            self.transaction.append(t)
         }
-        self.transaction.append(t)
     }
-
+    
     public func invalidate() {
 
-        self.update()
+        dispatch_async(dispatch_get_main_queue()) {
+            self.update()
+        }
     }
+}
+
+extension TableController {
 
     public func append(newElement: TableSection) {
 
@@ -246,7 +262,7 @@ public final class TableController: NSObject {
             self.removeAtIndex(index)
         }
     }
-    
+
 
     func updateSectionContent(#kind: NSKeyValueChange, indexes: NSIndexSet) {
 
@@ -525,7 +541,7 @@ extension TableController {
 private var UITableView_controller: UInt8 = 0
 extension UITableView {
 
-    public var controller: TableController? {
+    public var controller: TableController! {
 
         get {
             return objc_getAssociatedObject(self, &UITableView_controller) as? TableController

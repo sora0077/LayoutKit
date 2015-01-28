@@ -18,19 +18,25 @@ class ViewController: UIViewController {
 
         self.tableView.controller = TableController(responder: self)
         if let c = self.tableView.controller {
-            c.sections[0].append(TextRow<ColoredTextTableViewCell>(title: "test1"))
-            c.sections[0].append(TextRow<SimpleTextTableViewCell>(title: "test2"))
-            c.sections[0].append(TextRow<ColoredTextTableViewCell>(title: "test3"))
-            c.sections[0].append(TextRow<SimpleTextTableViewCell>(title: "test4"))
+            c.sections[0].extend(
+                [
+                    TextRow<ColoredTextTableViewCell>(title: "test1"),
+                    TextRow<SimpleTextTableViewCell>(title: "test2"),
+                    TextRow<ColoredTextTableViewCell>(title: "test3"),
+                    TextRow<SimpleTextTableViewCell>(title: "test4"),
+                ]
+            )
         }
     }
 
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
 
+        let queue = dispatch_queue_create("aaa", nil)
+
         let delay = 3.0 * Double(NSEC_PER_SEC)
         let when  = dispatch_time(DISPATCH_TIME_NOW, Int64(delay))
-        dispatch_after(when, dispatch_get_main_queue()) { () -> Void in
+        dispatch_after(when, queue) { () -> Void in
 
             if let c = self.tableView.controller {
                 for j in 0..<10 {
@@ -51,7 +57,7 @@ class ViewController: UIViewController {
                 }
             }
             let when  = dispatch_time(DISPATCH_TIME_NOW, Int64(delay))
-            dispatch_after(when, dispatch_get_main_queue()) { () -> Void in
+            dispatch_after(when, queue) { () -> Void in
 
                 if let c = self.tableView.controller {
                     for s in c.sections {
@@ -72,7 +78,7 @@ class ViewController: UIViewController {
                     }
                 }
                 let when  = dispatch_time(DISPATCH_TIME_NOW, Int64(delay))
-                dispatch_after(when, dispatch_get_main_queue()) { () -> Void in
+                dispatch_after(when, queue) { () -> Void in
 
                     if let c = self.tableView.controller {
 
@@ -89,7 +95,7 @@ class ViewController: UIViewController {
 
                     }
                     let when  = dispatch_time(DISPATCH_TIME_NOW, Int64(delay))
-                    dispatch_after(when, dispatch_get_main_queue()) { () -> Void in
+                    dispatch_after(when, queue) { () -> Void in
 
                         if let c = self.tableView.controller {
 
@@ -97,7 +103,7 @@ class ViewController: UIViewController {
                             target.size.height = 90
                         }
                         let when  = dispatch_time(DISPATCH_TIME_NOW, Int64(delay))
-                        dispatch_after(when, dispatch_get_main_queue()) { () -> Void in
+                        dispatch_after(when, queue) { () -> Void in
 
                             if let c = self.tableView.controller {
 
