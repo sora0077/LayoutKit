@@ -219,6 +219,7 @@ extension TableController {
 
         func inlineRefresh() {
 
+            println("replace inline ", index)
             let list: TableController.ListProcess = {}
             let ui: TableController.UIProcess = { (_) in }
             self.addTransaction(({ (list, ui) }, .Replacement, index))
@@ -413,13 +414,14 @@ extension TableController {
     public func tableView(tableView: UITableView, estimatedHeightForHeaderInSection section: Int) -> CGFloat {
 
         let s = self.sections[section]
-        return s.header?.estimatedSize.height ?? UITableViewAutomaticDimension
+        return s.header?.estimatedSize.height ?? 0
     }
 
     public func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
 
         let s = self.sections[section]
-        return s.header?.size.height ?? UITableViewAutomaticDimension
+        println(("header \(section)", s.header?.size.height ?? 0))
+        return s.header?.size.height ?? 0
     }
 
     public func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -478,13 +480,14 @@ extension TableController {
     public func tableView(tableView: UITableView, estimatedHeightForFooterInSection section: Int) -> CGFloat {
 
         let s = self.sections[section]
-        return s.footer?.estimatedSize.height ?? UITableViewAutomaticDimension
+        return s.footer?.estimatedSize.height ?? 0
     }
 
     public func tableView(tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
 
         let s = self.sections[section]
-        return s.footer?.size.height ?? UITableViewAutomaticDimension
+        println(("footer \(section)", s.footer?.size.height ?? 0))
+        return max(s.footer?.size.height ?? 0, 0.00001)
     }
 
     public func tableView(tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
@@ -512,6 +515,7 @@ extension TableController {
                     cell?.sectionHeaderElement = nil
                 }
             }
+            cell?.frame.size.height = f.size.height
             cell?.sectionFooterElement = f
 
             return cell

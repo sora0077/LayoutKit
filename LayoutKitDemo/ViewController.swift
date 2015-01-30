@@ -41,7 +41,7 @@ class ViewController: UIViewController {
             if let c = self.tableView.controller {
                 for j in 0..<10 {
                     var section = TableSection()
-                    section.header = NormalSection<UITableViewHeaderFooterView>(title: "header")
+                    section.header = NormalSection<NormalSectionView>(title: "header")
 
                     if j % 2 == 0 {
                         c.append(section)
@@ -103,13 +103,13 @@ class ViewController: UIViewController {
                             target.size.height = 90
                         }
                         let when  = dispatch_time(DISPATCH_TIME_NOW, Int64(delay))
-                        dispatch_after(when, queue) { () -> Void in
-
-                            if let c = self.tableView.controller {
-
-                                c.removeAll()
-                            }
-                        }
+//                        dispatch_after(when, queue) { () -> Void in
+//
+//                            if let c = self.tableView.controller {
+//
+//                                c.removeAll()
+//                            }
+//                        }
                     }
                 }
             }

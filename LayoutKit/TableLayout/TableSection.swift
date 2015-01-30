@@ -251,6 +251,16 @@ public class TableHeaderFooterBase: LayoutElement {
         }
     }
 
+    override public var size: CGSize {
+        didSet {
+            if let s = self.section {
+                if let i = s.index {
+                    s.controller?.replaceAtIndex(i, to: nil)
+                }
+            }
+        }
+    }
+
     weak var section: TableSection?
 
     override public init() {
