@@ -57,6 +57,8 @@ public final class TableController: NSObject {
 
     private var updating: Bool = false
 
+    private var animating: Bool = true
+
     /**
     :param: responder <#responder description#>
     :param: section   <#section description#>
@@ -77,8 +79,24 @@ public final class TableController: NSObject {
 
 extension TableController {
 
-    @objc
-    func update() {
+    func updateWithoutAnimate() {
+
+        if self.transaction.count > 0 {
+            for t in self.transaction {
+                let (list, _) = t.0()
+                list()
+            }
+            self.tableView?.reloadData()
+            self.transaction.removeAll(keepCapacity: true)
+        }
+
+        self.displayLink?.invalidate()
+        self.displayLink = nil
+        self.animating = true
+        self.updating = false
+    }
+
+    func updateWithAnimate() {
 
         if self.transaction.count > 0 && self.updating == false {
             self.updating = true
@@ -86,8 +104,14 @@ extension TableController {
             var kind = self.transaction[0].1
             var operations: [(() -> Void, Int)] = []
 
-            self.tableView?.beginUpdates()
             let num = self.transaction.count
+
+            if num > 16 {
+                self.updateWithoutAnimate()
+                return
+            }
+            self.tableView?.beginUpdates()
+
             //一度で大量に処理されることを防ぐ
             for _ in 0..<min(num, 16) {
                 let vv = self.transaction.removeAtIndex(0)
@@ -117,19 +141,21 @@ extension TableController {
             }
             self.tableView?.endUpdates()
 
-
             if self.transaction.count > 0 {
-                for t in self.transaction {
-                    let (list, _) = t.0()
-                    list()
-                }
-                self.tableView?.reloadData()
-                self.transaction.removeAll(keepCapacity: true)
+                self.animating = false
             }
-
-            self.displayLink?.invalidate()
-            self.displayLink = nil
+            
             self.updating = false
+        }
+    }
+
+    @objc
+    func update() {
+
+        if self.animating {
+            self.updateWithAnimate()
+        } else {
+            self.updateWithoutAnimate()
         }
     }
 
@@ -148,7 +174,7 @@ extension TableController {
     public func invalidate() {
 
         dispatch_async(dispatch_get_main_queue()) {
-            self.update()
+            self.updateWithoutAnimate()
         }
     }
 }
@@ -220,8 +246,11 @@ extension TableController {
         func inlineRefresh() {
 
             println("replace inline ", index)
+            let indexes = NSIndexSet(index: index)
             let list: TableController.ListProcess = {}
-            let ui: TableController.UIProcess = { (_) in }
+            let ui: TableController.UIProcess = { (tableView) in
+                self.updateSectionContent(kind: .Replacement, indexes: indexes)
+            }
             self.addTransaction(({ (list, ui) }, .Replacement, index))
         }
         func outlineRefresh(section: TableSection, old: TableSection) {
@@ -411,16 +440,15 @@ extension TableController {
 //MARK: Header
 extension TableController {
 
-    public func tableView(tableView: UITableView, estimatedHeightForHeaderInSection section: Int) -> CGFloat {
-
-        let s = self.sections[section]
-        return s.header?.estimatedSize.height ?? 0
-    }
+//    public func tableView(tableView: UITableView, estimatedHeightForHeaderInSection section: Int) -> CGFloat {
+//
+//        let s = self.sections[section]
+//        return s.header?.estimatedSize.height ?? 0
+//    }
 
     public func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
 
         let s = self.sections[section]
-        println(("header \(section)", s.header?.size.height ?? 0))
         return s.header?.size.height ?? 0
     }
 
@@ -477,17 +505,17 @@ extension TableController {
 //MARK: Footer
 extension TableController {
 
-    public func tableView(tableView: UITableView, estimatedHeightForFooterInSection section: Int) -> CGFloat {
-
-        let s = self.sections[section]
-        return s.footer?.estimatedSize.height ?? 0
-    }
+//    public func tableView(tableView: UITableView, estimatedHeightForFooterInSection section: Int) -> CGFloat {
+//
+//        let s = self.sections[section]
+//        println(("footer es \(section)", s.footer?.estimatedSize.height ?? 0))
+//        return s.footer?.estimatedSize.height ?? 0
+//    }
 
     public func tableView(tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
 
         let s = self.sections[section]
-        println(("footer \(section)", s.footer?.size.height ?? 0))
-        return max(s.footer?.size.height ?? 0, 0.00001)
+        return s.footer?.size.height ?? 0
     }
 
     public func tableView(tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
@@ -515,7 +543,6 @@ extension TableController {
                     cell?.sectionHeaderElement = nil
                 }
             }
-            cell?.frame.size.height = f.size.height
             cell?.sectionFooterElement = f
 
             return cell

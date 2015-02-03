@@ -21,9 +21,9 @@ class ViewController: UIViewController {
             c.sections[0].extend(
                 [
                     TextRow<ColoredTextTableViewCell>(title: "test1"),
-                    TextRow<SimpleTextTableViewCell>(title: "test2"),
-                    TextRow<ColoredTextTableViewCell>(title: "test3"),
-                    TextRow<SimpleTextTableViewCell>(title: "test4"),
+//                    TextRow<SimpleTextTableViewCell>(title: "test2"),
+//                    TextRow<ColoredTextTableViewCell>(title: "test3"),
+//                    TextRow<SimpleTextTableViewCell>(title: "test4"),
                 ]
             )
         }
@@ -52,8 +52,8 @@ class ViewController: UIViewController {
                     }
                     if j % 2 == 1 {
                         c.append(section)
-                        section.footer = NormalSection<UITableViewHeaderFooterView>(title: "footer")
                     }
+                    section.footer = NormalSection<UITableViewHeaderFooterView>(title: "footer", height: 6)
                 }
             }
             let when  = dispatch_time(DISPATCH_TIME_NOW, Int64(delay))
