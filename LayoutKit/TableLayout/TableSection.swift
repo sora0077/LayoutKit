@@ -14,7 +14,10 @@ public class TableSection: NSObject {
     private var displayedRows: [TableRowBase] = []
 
     var index: Int? {
-        return find(self.controller!.sections, self)
+        if let c = self.controller {
+            return find(c.sections, self)
+        }
+        return nil
     }
 
     var transactionCache: [(UITableView?) -> Void] = []
@@ -25,12 +28,20 @@ public class TableSection: NSObject {
         willSet {
             newValue?.sectionType = .Header
             newValue?.section = self
+
+            if let index = self.index {
+                self.controller?.replaceAtIndex(index, to: nil)
+            }
         }
     }
     public var footer: TableHeaderFooterBase? {
         willSet {
             newValue?.sectionType = .Footer
             newValue?.section = self
+
+            if let index = self.index {
+                self.controller?.replaceAtIndex(index, to: nil)
+            }
         }
     }
 
@@ -275,6 +286,15 @@ public class TableHeaderFooterBase: LayoutElement {
 
     public func nextResponder() -> UIResponder? {
         return self.section?.nextResponder()
+    }
+
+    public func remove() {
+        switch self.sectionType! {
+        case .Header:
+            self.section?.header = nil
+        case .Footer:
+            self.section?.footer = nil
+        }
     }
 }
 

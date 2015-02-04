@@ -57,10 +57,16 @@ class MenuViewController: UIViewController {
                     }
                 }
             )
-            s.footer = NormalSection<UITableViewHeaderFooterView>(title: "footer", height: 10)
+
+            let delay = 3.0 * Double(NSEC_PER_SEC)
+            let when  = dispatch_time(DISPATCH_TIME_NOW, Int64(delay))
+            dispatch_after(when, dispatch_get_main_queue()) {
+                println("aaaaaaa")
+                s.footer = NormalSection<UITableViewHeaderFooterView>(title: "footer", height: 40)
+            }
         }
         self.tableView.controller.invalidate()
-        self.tableView.reloadData()
+
     }
 
     override func didReceiveMemoryWarning() {

@@ -37,7 +37,11 @@ class NormalSection<T: UITableViewHeaderFooterView>: TableHeaderFooter<T>, Norma
         let when  = dispatch_time(DISPATCH_TIME_NOW, Int64(1))
         dispatch_after(when, dispatch_get_main_queue()) { () -> Void in
 
-            self.size.height = 100
+            if self.size.height == 100 {
+                self.remove()
+            } else {
+                self.size.height = 100
+            }
         }
     }
 }
