@@ -9,6 +9,15 @@
 import UIKit
 
 
+private func async_main_safe(block: () -> Void) {
+    
+    if NSThread.isMainThread() {
+        block()
+    } else {
+        dispatch_async(dispatch_get_main_queue(), block)
+    }
+}
+
 protocol TableElementProtocol: NSObjectProtocol {
 
     class var identifier: String { get }
@@ -59,17 +68,24 @@ public final class TableController: NSObject {
 
     private var animating: Bool = true
 
-    /**
-    :param: responder <#responder description#>
-    :param: section   <#section description#>
-    */
-    public required init(responder: UIResponder?, section: TableSection = TableSection()) {
+
+    public required init(responder: UIResponder?, sections: [TableSection]) {
         self.responder = responder
         
         super.init()
 
-        section.controller = self
-        self.sections = [section]
+        for section in sections {
+            section.controller = self
+        }
+        self.sections = sections
+    }
+    
+    /**
+    :param: responder <#responder description#>
+    :param: section   <#section description#>
+    */
+    public convenience init(responder: UIResponder?, section: TableSection = TableSection()) {
+        self.init(responder: responder, sections: [section])
     }
 
     deinit {
@@ -161,7 +177,7 @@ extension TableController {
 
     func addTransaction(t: (Processor, NSKeyValueChange, Int)) {
 
-        dispatch_async(dispatch_get_main_queue()) {
+        async_main_safe {
             if self.displayLink == nil {
                 self.displayLink = CADisplayLink(target: self, selector: "update")
                 self.displayLink?.frameInterval = 20
@@ -172,8 +188,8 @@ extension TableController {
     }
     
     public func invalidate() {
-
-        dispatch_async(dispatch_get_main_queue()) {
+    
+        async_main_safe {
             self.updateWithoutAnimate()
         }
     }
