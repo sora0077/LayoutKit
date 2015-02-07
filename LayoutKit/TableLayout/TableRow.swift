@@ -106,6 +106,12 @@ public class TableRow<T: UITableViewCell where T: TableElementRendererProtocol>:
 
     public var renderer: Renderer? {
 
+        willSet {
+            if newValue != self.renderer {
+                self.renderer?.rowElement?.viewWillDisappear()
+            }
+        }
+
         didSet {
             if oldValue != self.renderer {
                 oldValue?.rowElement?.viewDidDisappear()

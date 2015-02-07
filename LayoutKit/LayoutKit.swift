@@ -60,8 +60,13 @@ public class LayoutElement: NSObject {
 
     }
 
+    public func viewWillDisappear() {
+
+    }
+
+    @availability(*, deprecated=1.0)
     public func viewDidDisappear() {
-        
+
     }
 
     public func viewDidLayoutSubviews() {

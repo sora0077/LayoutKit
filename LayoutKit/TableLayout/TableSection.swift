@@ -316,6 +316,18 @@ public class TableHeaderFooter<T: UITableViewHeaderFooterView>: TableHeaderFoote
 
     public var renderer: Renderer? {
 
+        willSet {
+
+            if newValue != self.renderer {
+                switch self.sectionType! {
+                case .Header:
+                    self.renderer?.sectionHeaderElement?.viewWillDisappear()
+                case .Footer:
+                    self.renderer?.sectionFooterElement?.viewWillDisappear()
+                }
+            }
+        }
+
         didSet {
             if let renderer = self.renderer {
                 switch self.sectionType! {

@@ -29,15 +29,22 @@ class TextRow<T: UITableViewCell where T: TextRowRendererAcceptable>: TableRow<T
     }
 
     override func viewDidLayoutSubviews() {
-
-        println(("viewDidAppear", self.title))
+        super.viewDidLayoutSubviews()
+//        println(("viewDidAppear", self.renderer))
 
         self.renderer?.titleLabel.text = self.title
     }
 
-    override func viewDidDisappear() {
+    override func viewWillDisappear() {
+        super.viewWillDisappear()
 
-        println(("viewDidDisappear", self.title))
+        println(("viewWillDisappear", self.renderer))
+    }
+
+    override func viewDidDisappear() {
+        super.viewDidDisappear()
+
+//        println(("viewDidDisappear", self.renderer))
     }
 
     override func didSelect() {
