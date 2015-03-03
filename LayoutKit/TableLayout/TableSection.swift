@@ -140,6 +140,7 @@ public class TableSection: NSObject {
 
                     let list: TableController.ListProcess = {
                         self.rows[index] = row
+                        row.section = self
                     }
                     let ui: TableController.UIProcess = { (tableView) in
                         self.updateRowContent(kind: .Replacement, indexes: indexes)

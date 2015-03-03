@@ -142,6 +142,8 @@ class LayoutKitTests: XCTestCase {
         tableView.cellForRowAtIndexPath(indexPath)
 
         self.async(delay: 2, description: "") {
+            
+            XCTAssertNotNil(altRow.section, "")
 
             XCTAssertTrue(row.didDisappeared, "")
             XCTAssertNil(row.renderer, "")
