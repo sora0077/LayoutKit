@@ -20,18 +20,18 @@ private func async_main_safe(block: () -> Void) {
 
 protocol TableElementProtocol: NSObjectProtocol {
 
-    class var identifier: String { get }
-    class var canRegister: Bool { get }
+    static var identifier: String { get }
+    static var canRegister: Bool { get }
 
-    class func register(tableView: UITableView)
+    static func register(tableView: UITableView)
     
 }
 
 public protocol TableElementRendererProtocol {
 
-    class var identifier: String { get }
-    class var canRegister: Bool { get }
-    class func register(tableView: UITableView)
+    static var identifier: String { get }
+    static var canRegister: Bool { get }
+    static func register(tableView: UITableView)
 }
 
 /**
@@ -95,6 +95,7 @@ public final class TableController: NSObject {
 
 extension TableController {
 
+    
     func updateWithoutAnimate() {
 
         if self.transaction.count > 0 {
@@ -111,14 +112,17 @@ extension TableController {
         self.animating = true
         self.updating = false
     }
-
+    
     func updateWithAnimate() {
+        
+        typealias Operation = (() -> Void, Int)
 
         if self.transaction.count > 0 && self.updating == false {
             self.updating = true
 
-            var kind = self.transaction[0].1
-            var operations: [(() -> Void, Int)] = []
+            let transaction = self.transaction[0]
+            var kind = transaction.1
+            var operations: [Operation] = []
 
             let num = self.transaction.count
 
@@ -133,7 +137,12 @@ extension TableController {
                 let vv = self.transaction.removeAtIndex(0)
 
                 if vv.1 != kind {
-                    let stream = kind == .Removal ? sorted(operations) { $0.1 > $1.1 } : operations
+                    let stream: [Operation]
+                    if kind == .Removal {
+                        stream = sorted(operations) { $0.1 > $1.1 }
+                    } else {
+                        stream = operations
+                    }
                     for vv in stream {
                         vv.0()
                     }
@@ -143,15 +152,21 @@ extension TableController {
                     self.tableView?.beginUpdates()
                 }
 
-                operations.append({
+                let operation: Operation = ({
                     let (list, ui) = vv.0()
                     list()
                     ui(tableView: self.tableView)
-                    }, vv.2)
+                }, vv.2)
+                operations.append(operation)
 
                 kind = vv.1
             }
-            let stream = kind == .Removal ? sorted(operations) { $0.1 > $1.1 } : operations
+            let stream: [Operation]
+            if kind == .Removal {
+                stream = sorted(operations) { $0.1 > $1.1 }
+            } else {
+                stream = operations
+            }
             for vv in stream {
                 vv.0()
             }
@@ -202,7 +217,7 @@ extension TableController {
         self.insert(newElement, atIndex: self.sections.count)
     }
 
-    public func insert(newElement: TableSection, atIndex index: @autoclosure () -> Int) {
+    public func insert(newElement: TableSection, @autoclosure(escaping) atIndex index: () -> Int) {
 
         let block: Processor = {
             let index = index()
@@ -228,7 +243,7 @@ extension TableController {
         }
     }
 
-    func removeAtIndex(index: @autoclosure () -> Int) {
+    func removeAtIndex(@autoclosure(escaping) index: () -> Int) {
 
         let block: Processor = {
             let index = index()
@@ -256,8 +271,12 @@ extension TableController {
 
         self.removeAtIndex(self.sections.count - 1)
     }
+    
+    func replaceAtIndex(index: Int) {
+        self.replaceAtIndex(index, to: nil)
+    }
 
-    func replaceAtIndex(index: Int, to: (@autoclosure () -> TableSection)? = nil) {
+    func replaceAtIndex(index: Int, @autoclosure(escaping) to: () -> TableSection?) {
 
         func inlineRefresh() {
 
@@ -290,7 +309,7 @@ extension TableController {
 
             self.addTransaction((block, .Replacement, index))
         }
-        if let section = to?() {
+        if let section = to() {
             let old = self.sections[index]
             if section == old {
                 inlineRefresh()
@@ -403,7 +422,7 @@ extension TableController {
         }
 
         let dequeue: DequeueFunc = tableView.dequeueReusableCellWithIdentifier
-        let cell = dequeue(identifier, forIndexPath: indexPath) as UITableViewCell
+        let cell = dequeue(identifier, forIndexPath: indexPath) as! UITableViewCell
         cell.rowElement = r
         r.setRendererView(cell)
         

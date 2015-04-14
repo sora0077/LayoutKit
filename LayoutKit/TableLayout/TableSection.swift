@@ -54,7 +54,7 @@ public class TableSection: NSObject {
         self.insert(newElement, atIndex: self.rows.count)
     }
 
-    public func insert(newElement: TableRowBase, atIndex index: @autoclosure () -> Int) {
+    public func insert(newElement: TableRowBase, @autoclosure(escaping) atIndex index: () -> Int) {
 
         let block: TableController.Processor = {
             let index = index()
@@ -86,7 +86,7 @@ public class TableSection: NSObject {
         }
     }
 
-    func removeAtIndex(index: @autoclosure () -> Int) {
+    func removeAtIndex(@autoclosure(escaping) index: () -> Int) {
 
         let block: TableController.Processor = {
             let index = index()
@@ -122,7 +122,12 @@ public class TableSection: NSObject {
         self.removeAtIndex(self.rows.count - 1)
     }
 
-    func replaceAtIndex(index: Int, to: (@autoclosure () -> TableRowBase)? = nil) {
+    func replaceAtIndex(index: Int) {
+        
+        self.replaceAtIndex(index, to: nil)
+    }
+    
+    func replaceAtIndex(index: Int, @autoclosure(escaping) to: () -> TableRowBase?) {
 
         func inlineRefresh() {
 
@@ -159,7 +164,7 @@ public class TableSection: NSObject {
                 list()
             }
         }
-        if let row = to?() {
+        if let row = to() {
             let old = self.rows[index]
             if row == old {
                 inlineRefresh()
@@ -202,7 +207,12 @@ public class TableSection: NSObject {
         }
     }
 
-    public func replace(row: TableRowBase, to: (@autoclosure () -> TableRowBase)? = nil) {
+    public func replace(row: TableRowBase) {
+        
+        self.replace(row, to: nil)
+    }
+    
+    public func replace(row: TableRowBase, @autoclosure(escaping) to: () -> TableRowBase?) {
 
         if let index = find(self.rows, row) {
             self.replaceAtIndex(index, to: to)

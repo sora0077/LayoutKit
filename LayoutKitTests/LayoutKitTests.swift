@@ -20,7 +20,7 @@ class TextRow<T: UITableViewCell where T: TableElementRendererProtocol>: TableRo
 
     private var willAppeared: Bool = false
 
-    private var didDisappeared: Bool = false
+    private var willDisappear: Bool = false
 
     init(title: String) {
         self.title = title
@@ -32,8 +32,8 @@ class TextRow<T: UITableViewCell where T: TableElementRendererProtocol>: TableRo
         self.willAppeared = true
     }
 
-    override func viewDidDisappear() {
-        self.didDisappeared = true
+    override func viewWillDisappear() {
+        self.willDisappear = true
     }
 }
 
@@ -145,7 +145,7 @@ class LayoutKitTests: XCTestCase {
             
             XCTAssertNotNil(altRow.section, "")
 
-            XCTAssertTrue(row.didDisappeared, "")
+            XCTAssertTrue(row.willDisappear, "")
             XCTAssertNil(row.renderer, "")
             XCTAssertNotNil(altRow.renderer, "")
 
