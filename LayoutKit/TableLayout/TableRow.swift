@@ -8,7 +8,7 @@
 
 import UIKit
 
-public class TableRowBase: LayoutElement {
+public class TableRowBase: LayoutElement, Equatable {
 
     /// section, row
     var index: (Int?, Int?) {
@@ -72,7 +72,12 @@ public class TableRowBase: LayoutElement {
         self.section?.remove(self)
     }
 
-    public func replace(to: (@autoclosure () -> TableRowBase)? = nil) {
+    public func replace() {
+        
+        self.replace(to: nil)
+    }
+    
+    public func replace(@autoclosure(escaping) #to: () -> TableRowBase?) {
 
         self.section?.replace(self, to: to)
     }
@@ -80,6 +85,10 @@ public class TableRowBase: LayoutElement {
     public func willMoveToRenderer(view: UITableViewCell?) {
 
     }
+}
+
+public func == (lhs: TableRowBase, rhs: TableRowBase) -> Bool {
+    return lhs === rhs
 }
 
 public class TableRow<T: UITableViewCell where T: TableElementRendererProtocol>: TableRowBase, RendererProtocol {

@@ -20,11 +20,11 @@ protocol RendererProtocol {
 
 protocol RendererClass {
 
-    class var identifier: String { get }
+    static var identifier: String { get }
 }
 
 
-public class LayoutElement: NSObject {
+public class LayoutElement {
 
     public var estimatedSize: CGSize = CGSizeZero
     public var size: CGSize = CGSizeZero {
@@ -36,8 +36,7 @@ public class LayoutElement: NSObject {
 //    public var superelement: LayoutElement?
 //    public var subelements: [LayoutElement] = []
 
-    override public init() {
-        super.init()
+    public init() {
     }
 
     class var identifier: String {
