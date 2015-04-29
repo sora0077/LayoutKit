@@ -41,8 +41,6 @@ class ViewController: UIViewController {
             if let c = self.tableView.controller {
                 for j in 0..<10 {
                     var section = TableSection()
-                    section.header = NormalSection<NormalSectionView>(title: "header")
-
                     if j % 2 == 0 {
                         c.append(section)
                     }

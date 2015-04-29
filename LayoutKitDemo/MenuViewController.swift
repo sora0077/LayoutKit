@@ -76,7 +76,7 @@ class MenuViewController: UIViewController {
 
     func segueAction(identifier: String, _ block: ((UIViewController) -> Void)? = nil) {
 
-        let next = self.storyboard?.instantiateViewControllerWithIdentifier(identifier) as UIViewController
+        let next = self.storyboard?.instantiateViewControllerWithIdentifier(identifier) as! UIViewController
         self.navigationController?.pushViewController(next, animated: true)
 
         block?(next)
@@ -92,4 +92,13 @@ class MenuViewController: UIViewController {
     }
     */
 
+}
+
+
+extension MenuViewController: UIScrollViewDelegate {
+    
+    func scrollViewDidScroll(scrollView: UIScrollView) {
+        
+        println(scrollView.contentOffset)
+    }
 }
