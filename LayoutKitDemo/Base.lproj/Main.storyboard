@@ -5,6 +5,36 @@
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
+        <!--View Controller-->
+        <scene sceneID="c7W-Ci-Lim">
+            <objects>
+                <viewController id="WAI-sK-il7" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="ErZ-7G-gGi"/>
+                        <viewControllerLayoutGuide type="bottom" id="XSy-zN-tjz"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="7UD-JT-cEa">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vjb-E8-GJB">
+                                <rect key="frame" x="16" y="72" width="46" height="30"/>
+                                <state key="normal" title="Button">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <segue destination="5ut-6Y-zHB" kind="show" id="2F4-vH-ZEe"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="nGr-EU-CKO"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="noD-ls-Bw6" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="284" y="-641"/>
+        </scene>
         <!--Menu View Controller-->
         <scene sceneID="Q62-la-CIb">
             <objects>
@@ -120,12 +150,12 @@
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="5ut-6Y-zHB" kind="relationship" relationship="rootViewController" id="m2C-Gk-ciQ"/>
+                        <segue destination="WAI-sK-il7" kind="relationship" relationship="rootViewController" id="U47-kq-5A0"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="f35-It-SUY" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-421" y="32"/>
+            <point key="canvasLocation" x="-453" y="20"/>
         </scene>
     </scenes>
 </document>

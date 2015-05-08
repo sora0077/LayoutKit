@@ -113,7 +113,7 @@ public class TableRow<T: UITableViewCell where T: TableElementRendererProtocol>:
         }
     }
 
-    public var renderer: Renderer? {
+    public weak var renderer: Renderer? {
 
         willSet {
             if newValue != self.renderer {

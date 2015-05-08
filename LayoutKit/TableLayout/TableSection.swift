@@ -325,7 +325,7 @@ public class TableHeaderFooter<T: UITableViewHeaderFooterView>: TableHeaderFoote
         T.register(tableView)
     }
 
-    public var renderer: Renderer? {
+    public weak var renderer: Renderer? {
 
         willSet {
 

@@ -174,6 +174,9 @@ extension TableController {
 
             if self.transaction.count > 0 {
                 self.animating = false
+            } else {
+                self.displayLink?.invalidate()
+                self.displayLink = nil
             }
             
             self.updating = false

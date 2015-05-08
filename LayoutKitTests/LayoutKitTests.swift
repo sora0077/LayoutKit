@@ -70,31 +70,55 @@ class LayoutKitTests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
         super.tearDown()
     }
-
+    
+    func test_コントローラーの開放() {
+        
+        var tableView: UITableView! = UITableView(frame: CGRectZero, style: .Plain)
+        
+        weak var wcontroller: TableController!
+        autoreleasepool {
+            let controller = TableController(responder: nil)
+            tableView.controller = controller
+            
+            XCTAssertTrue(tableView.delegate! === tableView.controller!, "")
+            
+            wcontroller = controller
+            
+            XCTAssertNotNil(wcontroller, "")
+        }
+        
+        
+        XCTAssertNotNil(wcontroller, "")
+        
+        tableView = nil
+        
+        XCTAssertNil(wcontroller, "")
+    }
+    
     func test_テーブルビューの入れ替えが正しく行われること() {
-
+        
         let tableView = UITableView(frame: CGRectZero, style: .Plain)
         let initialDelegate = DummyDelegate()
-
+        
         tableView.delegate = initialDelegate
-
+        
         let controller = TableController(responder: nil)
         tableView.controller = controller
-
+        
         XCTAssertTrue(tableView.delegate! === tableView.controller!, "")
-
+        
         let altController = TableController(responder: nil)
-
+        
         tableView.controller = altController
-
+        
         XCTAssertTrue(tableView.delegate! === altController, "")
         XCTAssertTrue(altController.altDelegate === initialDelegate, "コントローラの入れ替えは元の管理外のオブジェクトに戻る")
-
+        
         tableView.controller = nil
-
+        
         XCTAssertTrue(tableView.delegate! === initialDelegate, "")
-
-
+        
+        
     }
 
     func test_セルの追加の動作() {
