@@ -16,6 +16,9 @@ class MenuViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+//        TableRowProtocol
+        
 
         // Do any additional setup after loading the view.
         self.nextResponder()
@@ -44,6 +47,18 @@ class MenuViewController: UIViewController {
                         }
                     }
                 }
+            )
+            c.sections[0].append(
+                UITableView.StyleDefaultRow(text: "test")
+            )
+            c.sections[0].append(
+                UITableView.StyleValue1Row(text: "test", detailText: "aa")
+            )
+            c.sections[0].append(
+                UITableView.StyleValue2Row(text: "test", detailText: "aa")
+            )
+            c.sections[0].append(
+                UITableView.StyleSubtitleRow(text: "test", detailText: "aa")
             )
 
             let s = TableSection()
