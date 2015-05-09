@@ -91,7 +91,15 @@ public func == (lhs: TableRowBase, rhs: TableRowBase) -> Bool {
     return lhs === rhs
 }
 
-public class TableRow<T: UITableViewCell where T: TableElementRendererProtocol>: TableRowBase, RendererProtocol {
+public protocol TableRowProtocol {
+    
+//    typealias Renderer: UITableViewCell, TableElementRendererProtocol
+//    
+//    var size: CGSize { get set }
+//    var renderer: Renderer? { get }
+}
+
+public class TableRow<T: UITableViewCell where T: TableElementRendererProtocol>: TableRowBase, RendererProtocol, TableRowProtocol {
 
     typealias Renderer = T
 
@@ -113,7 +121,7 @@ public class TableRow<T: UITableViewCell where T: TableElementRendererProtocol>:
         }
     }
 
-    public weak var renderer: Renderer? {
+    public internal(set) weak var renderer: Renderer? {
 
         willSet {
             if newValue != self.renderer {
@@ -175,8 +183,55 @@ extension UITableViewCell {
 }
 
 
+private class DefaultTableRow<T: UITableViewCell where T: TableElementRendererProtocol>: TableRow<T>, TableRowProtocol {
+    
+    var text: String! {
+        willSet {
+            dispatch_async(dispatch_get_main_queue()) {
+                self.renderer?.textLabel?.text = newValue
+            }
+        }
+    }
+    var detailText: String! {
+        willSet {
+            dispatch_async(dispatch_get_main_queue()) {
+                self.renderer?.detailTextLabel?.text = newValue
+            }
+        }
+    }
+    
+    init(text: String!, detailText: String! = nil) {
+        self.text = text
+        self.detailText = detailText
+        super.init()
+    }
+    
+    private override func viewWillAppear() {
+        super.viewWillAppear()
+        
+        self.renderer?.textLabel?.text = self.text
+        self.renderer?.detailTextLabel?.text = self.detailText
+    }
+}
+
+extension UITableView {
+    
+    public class func StyleDefaultRow(#text: String!) -> TableRow<UITableViewCell.StyleDefault> {
+        return DefaultTableRow<UITableViewCell.StyleDefault>(text: text, detailText: nil)
+    }
+    public class func StyleValue1Row(#text: String!, detailText: String! = nil) -> TableRow<UITableViewCell.StyleValue1> {
+        return DefaultTableRow<UITableViewCell.StyleValue1>(text: text, detailText: detailText)
+    }
+    public class func StyleValue2Row(#text: String!, detailText: String! = nil) -> TableRow<UITableViewCell.StyleValue2> {
+        return DefaultTableRow<UITableViewCell.StyleValue2>(text: text, detailText: detailText)
+    }
+    public class func StyleSubtitleRow(#text: String!, detailText: String! = nil) -> TableRow<UITableViewCell.StyleSubtitle> {
+        return DefaultTableRow<UITableViewCell.StyleSubtitle>(text: text, detailText: detailText)
+    }
+}
 
 extension UITableViewCell {
+    
 
     public class StyleDefault: UITableViewCell, TableElementRendererProtocol {
 
