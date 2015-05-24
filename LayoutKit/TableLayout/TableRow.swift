@@ -29,6 +29,14 @@ public class TableRowBase: LayoutElement, Equatable {
     public var separatorStyle: UITableViewCellSeparatorStyle = .SingleLine // SingleLineEtched is not supported
     public var separatorInset: UIEdgeInsets = UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 0)
     public var selected: Bool = false
+    
+    public var indexPath: NSIndexPath? {
+        let idx = self.index
+        if let section = idx.0, row = idx.1 {
+            return NSIndexPath(forRow: row, inSection: section)
+        }
+        return nil
+    }
 
     weak var section: TableSection?
 
@@ -52,6 +60,36 @@ public class TableRowBase: LayoutElement, Equatable {
 
     public func nextResponder() -> UIResponder? {
         return self.section?.nextResponder()
+    }
+    
+    public func hasFirstResponder() -> Bool {
+    
+        if let v = self.getRenderer() {
+            return self.findFirstResponder(v)
+        }
+        return false
+    }
+    
+    private func findFirstResponder(view: UIView) -> Bool {
+        
+        if view.isFirstResponder() {
+            return true
+        }
+        for v in view.subviews as! [UIView] {
+            return findFirstResponder(v)
+        }
+        return false
+    }
+    
+    public func scroll(#to: UITableViewScrollPosition, animated: Bool = true) -> Bool {
+        
+        if let tableView = self.section?.controller?.tableView,
+            let indexPath = self.indexPath
+        {
+            tableView.scrollToRowAtIndexPath(indexPath, atScrollPosition: to, animated: animated)
+            return true
+        }
+        return false
     }
 
     public func didSelect() {
