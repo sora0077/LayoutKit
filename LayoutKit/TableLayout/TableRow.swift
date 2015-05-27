@@ -155,7 +155,9 @@ public class TableRow<T: UITableViewCell where T: TableElementRendererProtocol>:
 
     override public var size: CGSize {
         didSet {
-            self.replace()
+            if self.size.height != oldValue.height {
+                self.replace()
+            }
         }
     }
 

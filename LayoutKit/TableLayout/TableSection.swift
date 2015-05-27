@@ -51,13 +51,14 @@ public class TableSection: NSObject {
 
     public func append(newElement: TableRowBase) {
 
-        self.insert(newElement, atIndex: self.rows.count)
+        self.insert(newElement, atIndex: NSNotFound)
     }
 
     public func insert(newElement: TableRowBase, @autoclosure(escaping) atIndex index: () -> Int) {
 
         let block: TableController.Processor = {
-            let index = index()
+            let index = index() == NSNotFound ? self.rows.count : index()
+            println((index, NSNotFound))
             let indexes = NSIndexSet(index: index)
 
             let list: TableController.ListProcess = {
@@ -89,7 +90,7 @@ public class TableSection: NSObject {
     func removeAtIndex(@autoclosure(escaping) index: () -> Int) {
 
         let block: TableController.Processor = {
-            let index = index()
+            let index = index() == NSNotFound ? self.rows.count - 1 : index()
             let indexes = NSIndexSet(index: index)
 
             let list: TableController.ListProcess = {
@@ -112,14 +113,14 @@ public class TableSection: NSObject {
 
     public func removeAll() {
 
-        for i in reverse(0..<self.rows.count) {
-            self.removeAtIndex(i)
+        for i in 0..<self.rows.count {
+            self.removeLast()
         }
     }
 
     public func removeLast() {
 
-        self.removeAtIndex(self.rows.count - 1)
+        self.removeAtIndex(NSNotFound)
     }
 
     func replaceAtIndex(index: Int) {
@@ -154,7 +155,7 @@ public class TableSection: NSObject {
                     return (list, ui)
                 }
 
-                return ({}, { (_) in })
+                return ({}, { _ in })
             }
 
             if let c = self.controller {
