@@ -30,12 +30,23 @@ public class TableRowBase: LayoutElement, Equatable {
     public var separatorInset: UIEdgeInsets = UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 0)
     public var selected: Bool = false
     
+    public var didSelectAction: (() -> Void)!
+    public var accessoryButtonTappedAction: (() -> Void)!
+    
     public var indexPath: NSIndexPath? {
         let idx = self.index
         if let section = idx.0, row = idx.1 {
             return NSIndexPath(forRow: row, inSection: section)
         }
         return nil
+    }
+    
+    public var active: Bool {
+        return self.section != nil
+    }
+    
+    public var visible: Bool {
+        return self.getRenderer() != nil
     }
 
     weak var section: TableSection?
@@ -93,11 +104,14 @@ public class TableRowBase: LayoutElement, Equatable {
     }
 
     public func didSelect() {
+        
+        self.didSelectAction?()
         self.selected = false
     }
 
     public func accessoryButtonTapped() {
         
+        self.accessoryButtonTappedAction?()
     }
 
     public func append(newElement: TableRowBase) {

@@ -33,6 +33,9 @@ public class TableSection: NSObject {
                 self.controller?.replaceAtIndex(index, to: nil)
             }
         }
+        didSet {
+            oldValue?.section = nil
+        }
     }
     public var footer: TableHeaderFooterBase? {
         willSet {
@@ -42,6 +45,9 @@ public class TableSection: NSObject {
             if let index = self.index {
                 self.controller?.replaceAtIndex(index, to: nil)
             }
+        }
+        didSet {
+            oldValue?.section = nil
         }
     }
 
@@ -93,7 +99,8 @@ public class TableSection: NSObject {
             let indexes = NSIndexSet(index: index)
 
             let list: TableController.ListProcess = {
-                self.rows.removeAtIndex(index); return
+                let row = self.rows.removeAtIndex(index)
+                row.section = nil
             }
             let ui: TableController.UIProcess = { (tableView) in
                 self.updateRowContent(kind: .Removal, indexes: indexes)
@@ -177,33 +184,32 @@ public class TableSection: NSObject {
     }
 
     public func remove(row: TableRowBase) {
-
-        let initialIndex = find(self.rows, row)
-        if initialIndex == nil {
-            return
-        }
         
-        let block: TableController.Processor = {
-            if let index = find(self.rows, row) {
-                let indexes = NSIndexSet(index: index)
-
-                let list: TableController.ListProcess = {
-                    self.rows.removeAtIndex(index); return
+        if let index = find(self.rows, row) {
+            
+            let block: TableController.Processor = { [unowned row = row] in
+                if let index = find(self.rows, row) {
+                    let indexes = NSIndexSet(index: index)
+                    
+                    let list: TableController.ListProcess = {
+                        self.rows.removeAtIndex(index)
+                        row.section = nil
+                    }
+                    let ui: TableController.UIProcess = { (tableView) in
+                        self.updateRowContent(kind: .Removal, indexes: indexes)
+                    }
+                    
+                    return (list, ui)
                 }
-                let ui: TableController.UIProcess = { (tableView) in
-                    self.updateRowContent(kind: .Removal, indexes: indexes)
-                }
-                
-                return (list, ui)
+                return ({ _ in }, { _ in })
             }
-            return ({}, { (_) in })
-        }
-
-        if let c = self.controller {
-            c.addTransaction((block, .Removal, initialIndex!))
-        } else {
-            let (list, _) = block()
-            list()
+            
+            if let c = self.controller {
+                c.addTransaction((block, .Removal, index))
+            } else {
+                let (list, _) = block()
+                list()
+            }
         }
     }
 
@@ -284,11 +290,23 @@ public class TableHeaderFooterBase: LayoutElement {
             }
         }
     }
+    
+    public var active: Bool {
+        return self.section != nil
+    }
+    
+    public var visible: Bool {
+        return self.getRendererView() != nil
+    }
 
     weak var section: TableSection?
 
     override public init() {
         super.init()
+    }
+    
+    func getRendererView() -> UITableViewHeaderFooterView? {
+        fatalError("")
     }
 
     func setRendererView(renderer: UITableViewHeaderFooterView?) {
@@ -362,6 +380,10 @@ public class TableHeaderFooter<T: UITableViewHeaderFooterView>: TableHeaderFoote
 
     override public init() {
         super.init()
+    }
+    
+    override func getRendererView() -> UITableViewHeaderFooterView? {
+        return self.renderer
     }
 
     override func setRendererView(renderer: UITableViewHeaderFooterView?) {
