@@ -58,7 +58,6 @@ public class TableSection: NSObject {
 
         let block: TableController.Processor = {
             let index = index() == NSNotFound ? self.rows.count : index()
-            println((index, NSNotFound))
             let indexes = NSIndexSet(index: index)
 
             let list: TableController.ListProcess = {
