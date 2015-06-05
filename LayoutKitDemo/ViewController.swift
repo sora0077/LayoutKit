@@ -101,13 +101,13 @@ class ViewController: UIViewController {
                             target.size.height = 90
                         }
                         let when  = dispatch_time(DISPATCH_TIME_NOW, Int64(delay))
-//                        dispatch_after(when, queue) { () -> Void in
-//
-//                            if let c = self.tableView.controller {
-//
-//                                c.removeAll()
-//                            }
-//                        }
+                        dispatch_after(when, queue) { () -> Void in
+
+                            if let c = self.tableView.controller {
+
+                                c.removeAll()
+                            }
+                        }
                     }
                 }
             }
