@@ -41,6 +41,10 @@ public class TableRowBase: LayoutElement, Equatable {
         return nil
     }
     
+    public var layoutKitTableView: UITableView? {
+        return self.section?.controller?.tableView
+    }
+    
     public var active: Bool {
         return self.section != nil
     }
