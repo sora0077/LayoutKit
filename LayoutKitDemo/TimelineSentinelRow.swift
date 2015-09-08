@@ -25,7 +25,7 @@ class TimelineSentinelRow
 
     override func viewDidLayoutSubviews() {
 
-        self.loadingDidStart(done: 0)
+        self.loadingDidStart(0)
     }
 
     func loadingDidStart(done: NSTimeInterval = 0) {
@@ -68,7 +68,7 @@ class _TimelineLoadingSentinelRow
 
     override func viewDidLayoutSubviews() {
 
-        self.loadingDidStart(done: 1)
+        self.loadingDidStart(1)
 
         self.renderer?.textLabel?.text = "読み込み中..."
 

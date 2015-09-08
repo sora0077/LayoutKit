@@ -63,7 +63,7 @@ public class LayoutElement {
 
     }
 
-    @availability(*, deprecated=1.0)
+    @available(*, deprecated=1.0)
     public func viewDidDisappear() {
 
     }

@@ -16,7 +16,7 @@ public class TableRowBase: LayoutElement, Equatable {
         if let s = self.section {
 
             let section = s.index
-            if let index = find(s.rows, self) {
+            if let index = s.rows.indexOf(self) {
                 return (section, index)
             }
             return (section, nil)
@@ -90,13 +90,13 @@ public class TableRowBase: LayoutElement, Equatable {
         if view.isFirstResponder() {
             return true
         }
-        for v in view.subviews as! [UIView] {
+        for v in view.subviews {
             return findFirstResponder(v)
         }
         return false
     }
     
-    public func scroll(#to: UITableViewScrollPosition, animated: Bool = true) -> Bool {
+    public func scroll(to to: UITableViewScrollPosition, animated: Bool = true) -> Bool {
         
         if let tableView = self.section?.controller?.tableView,
             let indexPath = self.indexPath
@@ -133,7 +133,7 @@ public class TableRowBase: LayoutElement, Equatable {
         self.replace(to: nil)
     }
     
-    public func replace(@autoclosure(escaping) #to: () -> TableRowBase?) {
+    public func replace(@autoclosure(escaping) to to: () -> TableRowBase?) {
 
         self.section?.replace(self, to: to)
     }
@@ -157,7 +157,7 @@ public protocol TableRowProtocol {
 
 public class TableRow<T: UITableViewCell where T: TableElementRendererProtocol>: TableRowBase, RendererProtocol, TableRowProtocol {
 
-    typealias Renderer = T
+    public typealias Renderer = T
 
     override class var identifier: String {
         return T.identifier
@@ -235,13 +235,13 @@ extension UITableViewCell {
             } else {
                 self.rowElement?.willMoveToRenderer(nil)
             }
-            objc_setAssociatedObject(self, &UITableViewCell_rowElement, newValue, objc_AssociationPolicy(OBJC_ASSOCIATION_RETAIN_NONATOMIC))
+            objc_setAssociatedObject(self, &UITableViewCell_rowElement, newValue, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
     }
 }
 
 
-private class DefaultTableRow<T: UITableViewCell where T: TableElementRendererProtocol>: TableRow<T>, TableRowProtocol {
+private class DefaultTableRow<T: UITableViewCell where T: TableElementRendererProtocol>: TableRow<T> {
     
     var text: String! {
         willSet {
@@ -274,16 +274,16 @@ private class DefaultTableRow<T: UITableViewCell where T: TableElementRendererPr
 
 extension UITableView {
     
-    public class func StyleDefaultRow(#text: String!) -> TableRow<UITableViewCell.StyleDefault> {
+    public class func StyleDefaultRow(text text: String!) -> TableRow<UITableViewCell.StyleDefault> {
         return DefaultTableRow<UITableViewCell.StyleDefault>(text: text, detailText: nil)
     }
-    public class func StyleValue1Row(#text: String!, detailText: String! = nil) -> TableRow<UITableViewCell.StyleValue1> {
+    public class func StyleValue1Row(text text: String!, detailText: String! = nil) -> TableRow<UITableViewCell.StyleValue1> {
         return DefaultTableRow<UITableViewCell.StyleValue1>(text: text, detailText: detailText)
     }
-    public class func StyleValue2Row(#text: String!, detailText: String! = nil) -> TableRow<UITableViewCell.StyleValue2> {
+    public class func StyleValue2Row(text text: String!, detailText: String! = nil) -> TableRow<UITableViewCell.StyleValue2> {
         return DefaultTableRow<UITableViewCell.StyleValue2>(text: text, detailText: detailText)
     }
-    public class func StyleSubtitleRow(#text: String!, detailText: String! = nil) -> TableRow<UITableViewCell.StyleSubtitle> {
+    public class func StyleSubtitleRow(text text: String!, detailText: String! = nil) -> TableRow<UITableViewCell.StyleSubtitle> {
         return DefaultTableRow<UITableViewCell.StyleSubtitle>(text: text, detailText: detailText)
     }
 }
@@ -326,7 +326,7 @@ extension UITableViewCell {
             super.init(style: .Value1, reuseIdentifier: reuseIdentifier)
         }
 
-        required public init(coder aDecoder: NSCoder) {
+        required public init?(coder aDecoder: NSCoder) {
             super.init(coder: aDecoder)
         }
     }
@@ -350,7 +350,7 @@ extension UITableViewCell {
             super.init(style: .Value2, reuseIdentifier: reuseIdentifier)
         }
 
-        required public init(coder aDecoder: NSCoder) {
+        required public init?(coder aDecoder: NSCoder) {
             super.init(coder: aDecoder)
         }
     }
@@ -374,7 +374,7 @@ extension UITableViewCell {
             super.init(style: .Subtitle, reuseIdentifier: reuseIdentifier)
         }
 
-        required public init(coder aDecoder: NSCoder) {
+        required public init?(coder aDecoder: NSCoder) {
             super.init(coder: aDecoder)
         }
     }

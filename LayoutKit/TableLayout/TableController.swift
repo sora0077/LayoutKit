@@ -81,8 +81,8 @@ public final class TableController: NSObject {
     }
     
     /**
-    :param: responder <#responder description#>
-    :param: section   <#section description#>
+    - parameter responder: <#responder description#>
+    - parameter section:   <#section description#>
     */
     public convenience init(responder: UIResponder?, section: TableSection = TableSection()) {
         self.init(responder: responder, sections: [section])
@@ -139,7 +139,7 @@ extension TableController {
                 if vv.1 != kind {
                     let stream: [Operation]
                     if kind == .Removal {
-                        stream = sorted(operations) { $0.1 > $1.1 }
+                        stream = operations.sort { $0.1 > $1.1 }
                     } else {
                         stream = operations
                     }
@@ -163,7 +163,7 @@ extension TableController {
             }
             let stream: [Operation]
             if kind == .Removal {
-                stream = sorted(operations) { $0.1 > $1.1 }
+                stream = operations.sort { $0.1 > $1.1 }
             } else {
                 stream = operations
             }
@@ -265,7 +265,7 @@ extension TableController {
 
     public func removeAll() {
 
-        for i in reverse(0..<self.sections.count) {
+        for i in Array((0..<self.sections.count).reverse()) {
             self.removeAtIndex(i)
         }
     }
@@ -283,7 +283,7 @@ extension TableController {
 
         func inlineRefresh() {
 
-            println("replace inline ", index)
+            print("replace inline ", index)
             let indexes = NSIndexSet(index: index)
             let list: TableController.ListProcess = {}
             let ui: TableController.UIProcess = { (tableView) in
@@ -294,7 +294,7 @@ extension TableController {
         func outlineRefresh(section: TableSection, old: TableSection) {
 
             let block: TableController.Processor = {
-                if let index = find(self.sections, old) {
+                if let index = self.sections.indexOf(old) {
                     let indexes = NSIndexSet(index: index)
 
                     let list: TableController.ListProcess = {
@@ -317,7 +317,7 @@ extension TableController {
             if section == old {
                 inlineRefresh()
             } else {
-                outlineRefresh(section, old)
+                outlineRefresh(section, old: old)
             }
         } else {
             inlineRefresh()
@@ -326,13 +326,13 @@ extension TableController {
 
     public func remove(section: TableSection) {
 
-        if let index = find(self.sections, section) {
+        if let index = self.sections.indexOf(section) {
             self.removeAtIndex(index)
         }
     }
 
 
-    func updateSectionContent(#kind: NSKeyValueChange, indexes: NSIndexSet) {
+    func updateSectionContent(kind kind: NSKeyValueChange, indexes: NSIndexSet) {
 
         if let t = self.tableView {
 
@@ -508,7 +508,7 @@ extension TableController {
             }
 
             let dequeue = tableView.dequeueReusableHeaderFooterViewWithIdentifier
-            let cell = dequeue(identifier) as? UITableViewHeaderFooterView
+            let cell = dequeue(identifier)
             if s.footer == nil {
                 if let f = cell?.sectionFooterElement {
                     f.setRendererView(nil)
@@ -574,7 +574,7 @@ extension TableController {
             }
 
             let dequeue = tableView.dequeueReusableHeaderFooterViewWithIdentifier
-            let cell = dequeue(identifier) as? UITableViewHeaderFooterView
+            let cell = dequeue(identifier)
             if s.header == nil {
                 if let h = cell?.sectionHeaderElement {
                     h.setRendererView(nil)
@@ -653,12 +653,12 @@ extension TableController: UIScrollViewDelegate {
         return self.altDelegate?.viewForZoomingInScrollView?(scrollView)
     }
     
-    public func scrollViewWillBeginZooming(scrollView: UIScrollView, withView view: UIView!) {
+    public func scrollViewWillBeginZooming(scrollView: UIScrollView, withView view: UIView?) {
         
         self.altDelegate?.scrollViewWillBeginZooming?(scrollView, withView: view)
     }
     
-    public func scrollViewDidEndZooming(scrollView: UIScrollView, withView view: UIView!, atScale scale: CGFloat) {
+    public func scrollViewDidEndZooming(scrollView: UIScrollView, withView view: UIView?, atScale scale: CGFloat) {
         
         self.altDelegate?.scrollViewDidEndZooming?(scrollView, withView: view, atScale: scale)
     }
@@ -692,7 +692,7 @@ extension UITableView {
                 }
             }
 
-            objc_setAssociatedObject(self, &UITableView_controller, newValue, objc_AssociationPolicy(OBJC_ASSOCIATION_RETAIN_NONATOMIC))
+            objc_setAssociatedObject(self, &UITableView_controller, newValue, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
     }
 }

@@ -76,7 +76,7 @@ class MenuViewController: UIViewController {
             let delay = 3.0 * Double(NSEC_PER_SEC)
             let when  = dispatch_time(DISPATCH_TIME_NOW, Int64(delay))
             dispatch_after(when, dispatch_get_main_queue()) {
-                println("aaaaaaa")
+                print("aaaaaaa")
                 s.footer = NormalSection<UITableViewHeaderFooterView>(title: "footer", height: 40)
             }
         }
@@ -91,7 +91,7 @@ class MenuViewController: UIViewController {
 
     func segueAction(identifier: String, _ block: ((UIViewController) -> Void)? = nil) {
 
-        let next = self.storyboard?.instantiateViewControllerWithIdentifier(identifier) as! UIViewController
+        let next = self.storyboard!.instantiateViewControllerWithIdentifier(identifier)
         self.navigationController?.pushViewController(next, animated: true)
 
         block?(next)
@@ -114,6 +114,6 @@ extension MenuViewController: UIScrollViewDelegate {
     
     func scrollViewDidScroll(scrollView: UIScrollView) {
         
-        println(scrollView.contentOffset)
+        print(scrollView.contentOffset)
     }
 }

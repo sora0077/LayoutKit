@@ -35,12 +35,6 @@ class TextRow<T: UITableViewCell where T: TextRowRendererAcceptable>: TableRow<T
         self.renderer?.titleLabel.text = self.title
     }
 
-    override func viewWillDisappear() {
-        super.viewWillDisappear()
-
-        println(("viewWillDisappear", self.renderer))
-    }
-
     override func viewDidDisappear() {
         super.viewDidDisappear()
 

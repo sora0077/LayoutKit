@@ -59,7 +59,7 @@ class ViewController: UIViewController {
 
                 if let c = self.tableView.controller {
                     for s in c.sections {
-                        for r in enumerate(s.rows) {
+                        for r in s.rows.enumerate() {
                             switch r.index % 4 {
                             case 0:
                                 break

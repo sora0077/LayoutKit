@@ -15,7 +15,7 @@ public class TableSection: NSObject {
 
     var index: Int? {
         if let c = self.controller {
-            return find(c.sections, self)
+            return c.sections.indexOf(self)
         }
         return nil
     }
@@ -147,7 +147,7 @@ public class TableSection: NSObject {
         func outlineRefresh(row: TableRowBase, old: TableRowBase) {
 
             let block: TableController.Processor = {
-                if let index = find(self.rows, old) {
+                if let index = self.rows.indexOf(old) {
                     let indexes = NSIndexSet(index: index)
 
                     let list: TableController.ListProcess = {
@@ -176,7 +176,7 @@ public class TableSection: NSObject {
             if row == old {
                 inlineRefresh()
             } else {
-                outlineRefresh(row, old)
+                outlineRefresh(row, old: old)
             }
         } else {
             inlineRefresh()
@@ -185,23 +185,27 @@ public class TableSection: NSObject {
 
     public func remove(row: TableRowBase) {
         
-        if let index = find(self.rows, row) {
+        if let index = self.rows.indexOf(row) {
             
-            let block: TableController.Processor = { [unowned row = row] in
-                if let index = find(self.rows, row) {
-                    let indexes = NSIndexSet(index: index)
-                    
-                    let list: TableController.ListProcess = {
-                        self.rows.removeAtIndex(index)
-                        row.section = nil
-                    }
-                    let ui: TableController.UIProcess = { (tableView) in
-                        self.updateRowContent(kind: .Removal, indexes: indexes)
-                    }
-                    
-                    return (list, ui)
+            let block: TableController.Processor = { [weak row = row] in
+                guard let row = row else {
+                    return ({ _ in }, { _ in })
                 }
-                return ({ _ in }, { _ in })
+                guard let index = self.rows.indexOf(row) else {
+                    return ({ _ in }, { _ in })
+                }
+                
+                let indexes = NSIndexSet(index: index)
+                
+                let list: TableController.ListProcess = {
+                    self.rows.removeAtIndex(index)
+                    row.section = nil
+                }
+                let ui: TableController.UIProcess = { (tableView) in
+                    self.updateRowContent(kind: .Removal, indexes: indexes)
+                }
+                
+                return (list, ui)
             }
             
             if let c = self.controller {
@@ -220,12 +224,12 @@ public class TableSection: NSObject {
     
     public func replace(row: TableRowBase, @autoclosure(escaping) to: () -> TableRowBase?) {
 
-        if let index = find(self.rows, row) {
+        if let index = self.rows.indexOf(row) {
             self.replaceAtIndex(index, to: to)
         }
     }
 
-    func updateRowContent(#kind: NSKeyValueChange, indexes: NSIndexSet) {
+    func updateRowContent(kind kind: NSKeyValueChange, indexes: NSIndexSet) {
 
         if let t = self.controller?.tableView {
 
@@ -329,7 +333,7 @@ public class TableHeaderFooterBase: LayoutElement {
 
 public class TableHeaderFooter<T: UITableViewHeaderFooterView>: TableHeaderFooterBase, RendererProtocol {
 
-    typealias Renderer = T
+    public typealias Renderer = T
 
     override class var identifier: String {
         return T.identifier
@@ -423,7 +427,7 @@ extension UITableViewHeaderFooterView: TableElementRendererProtocol {
         }
 
         set {
-            objc_setAssociatedObject(self, &UITableViewHeaderFooterView_sectionHeaderElement, newValue, objc_AssociationPolicy(OBJC_ASSOCIATION_RETAIN_NONATOMIC))
+            objc_setAssociatedObject(self, &UITableViewHeaderFooterView_sectionHeaderElement, newValue, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
     }
 
@@ -436,7 +440,7 @@ extension UITableViewHeaderFooterView: TableElementRendererProtocol {
         }
 
         set {
-            objc_setAssociatedObject(self, &UITableViewHeaderFooterView_sectionHeaderElement, newValue, objc_AssociationPolicy(OBJC_ASSOCIATION_RETAIN_NONATOMIC))
+            objc_setAssociatedObject(self, &UITableViewHeaderFooterView_sectionHeaderElement, newValue, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
     }
 }
