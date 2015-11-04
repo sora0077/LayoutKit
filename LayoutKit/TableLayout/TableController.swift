@@ -27,7 +27,7 @@ protocol TableElementProtocol: NSObjectProtocol {
     
 }
 
-public protocol TableElementRendererProtocol {
+public protocol TableElementRendererProtocol: class {
 
     static var identifier: String { get }
     static var canRegister: Bool { get }
