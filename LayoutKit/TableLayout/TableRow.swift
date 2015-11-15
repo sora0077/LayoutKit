@@ -8,7 +8,7 @@
 
 import UIKit
 
-public class TableRowBase: LayoutElement, Equatable {
+public class TableRowBase: LayoutElement {
 
     /// section, row
     var index: (Int?, Int?) {

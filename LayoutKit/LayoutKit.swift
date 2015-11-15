@@ -24,7 +24,7 @@ protocol RendererClass {
 }
 
 
-public class LayoutElement {
+public class LayoutElement: NSObject {
 
     public var estimatedSize: CGSize = CGSizeZero
     public var size: CGSize = CGSizeZero {
@@ -36,7 +36,8 @@ public class LayoutElement {
 //    public var superelement: LayoutElement?
 //    public var subelements: [LayoutElement] = []
 
-    public init() {
+    public override init() {
+        super.init()
     }
 
     class var identifier: String {
